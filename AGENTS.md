@@ -1,3 +1,7 @@
-# Expo HAS CHANGED
+# Expo ИЗМЕНИЛСЯ
 
-Read the exact versioned docs at https://docs.expo.dev/versions/v56.0.0/ before writing any code.
+Перед написанием кода читай точную документацию по версии: https://docs.expo.dev/versions/v56.0.0/
+
+# Язык проекта
+
+Весь контент, комментарии и документация должны быть на русском языке.

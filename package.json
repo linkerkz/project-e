@@ -25,15 +25,21 @@
     "zustand": "^5.0.14"
   },
   "devDependencies": {
+    "@biomejs/biome": "2.4.16",
     "@types/react": "~19.2.2",
     "babel-preset-expo": "~56.0.14",
+    "husky": "9.1.7",
     "typescript": "~6.0.3"
   },
   "scripts": {
     "start": "expo start",
     "android": "expo start --android",
     "ios": "expo start --ios",
-    "web": "expo start --web"
+    "web": "expo start --web",
+    "lint": "biome ci . && tsc --noEmit",
+    "format": "biome check --write .",
+    "ci": "npm run lint",
+    "prepare": "husky"
   },
   "private": true
 }

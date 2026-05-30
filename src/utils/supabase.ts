@@ -6,16 +6,17 @@ const supabaseAnonKey = process.env.EXPO_PUBLIC_SUPABASE_KEY;
 
 export const isSupabaseConfigured = Boolean(supabaseUrl && supabaseAnonKey);
 
-export const supabase = isSupabaseConfigured
-  ? createClient(supabaseUrl!, supabaseAnonKey!, {
-      auth: {
-        storage: AsyncStorage,
-        autoRefreshToken: true,
-        persistSession: true,
-        detectSessionInUrl: false,
-      },
-    })
-  : null;
+export const supabase =
+  supabaseUrl && supabaseAnonKey
+    ? createClient(supabaseUrl, supabaseAnonKey, {
+        auth: {
+          storage: AsyncStorage,
+          autoRefreshToken: true,
+          persistSession: true,
+          detectSessionInUrl: false,
+        },
+      })
+    : null;
 
 export type SupabaseConnectionResult = {
   ok: boolean;
@@ -27,12 +28,12 @@ export async function checkSupabaseConnection(): Promise<SupabaseConnectionResul
     return {
       ok: false,
       message:
-        "Missing EXPO_PUBLIC_SUPABASE_URL or EXPO_PUBLIC_SUPABASE_KEY. Add them to .env and restart Expo.",
+        "Нет EXPO_PUBLIC_SUPABASE_URL или EXPO_PUBLIC_SUPABASE_KEY. Добавь их в .env и перезапусти Expo.",
     };
   }
 
   if (!supabase) {
-    return { ok: false, message: "Supabase client could not be created." };
+    return { ok: false, message: "Клиент Supabase не создан." };
   }
 
   try {
@@ -42,22 +43,25 @@ export async function checkSupabaseConnection(): Promise<SupabaseConnectionResul
       .limit(1);
 
     if (!error) {
-      return { ok: true, message: "Connected to Supabase." };
+      return { ok: true, message: "Подключено к Supabase." };
     }
 
-    // A missing table error still proves the URL/key reached Supabase correctly.
+    // Ошибка отсутствующей таблицы всё равно значит, что URL и ключ дошли до Supabase.
     if (error.code === "PGRST205" || error.code === "42P01") {
-      return { ok: true, message: "Connected to Supabase REST API." };
+      return { ok: true, message: "Подключено к REST API Supabase." };
     }
 
     return {
       ok: false,
-      message: `Supabase responded: ${error.message}`,
+      message: `Supabase ответил: ${error.message}`,
     };
   } catch (error) {
     return {
       ok: false,
-      message: error instanceof Error ? error.message : "Unable to reach Supabase.",
+      message:
+        error instanceof Error
+          ? error.message
+          : "Не удалось подключиться к Supabase.",
     };
   }
 }

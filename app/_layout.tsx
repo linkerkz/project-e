@@ -1,45 +1,33 @@
 import "../global.css";
-
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Link, Stack } from "expo-router";
+import { useState } from "react";
 import { Text, View } from "react-native";
-
-export const SITE_PAGES = [
-  { href: "/", label: "Home" },
-  { href: "/create", label: "Create" },
-  { href: "/a/welcome", label: "Welcome article" },
-  { href: "/a/supabase", label: "Supabase article" },
-] as const;
-
-const linkClassName = "text-base text-blue-600 underline";
-
-export function PageLinks() {
-  return (
-    <View className="flex-row flex-wrap gap-3">
-      {SITE_PAGES.map((page) => (
-        <Link key={page.href} href={page.href} asChild>
-          <Text className={linkClassName}>{page.label}</Text>
-        </Link>
-      ))}
-    </View>
-  );
-}
 
 export function BackLink() {
   return (
     <Link href="/" asChild>
-      <Text className="mb-4 text-base text-blue-600 underline">← Back to all pages</Text>
+      <Text className="text-blue-700 underline">← На главную</Text>
     </Link>
   );
 }
 
 export default function RootLayout() {
+  const [client] = useState(() => new QueryClient());
   return (
-    <>
-      <View className="gap-3 border-b border-gray-200 bg-white px-5 pb-4 pt-6">
-        <Text className="text-3xl font-bold text-gray-950">Venty</Text>
-        <PageLinks />
+    <QueryClientProvider client={client}>
+      <View className="border-b border-gray-500 p-4">
+        <Text className="text-3xl font-bold">Венти</Text>
+        <View className="flex-row gap-4">
+          <Link href="/" asChild>
+            <Text className="text-blue-700 underline">Главная</Text>
+          </Link>
+          <Link href="/create" asChild>
+            <Text className="text-blue-700 underline">Создать</Text>
+          </Link>
+        </View>
       </View>
       <Stack screenOptions={{ headerShown: false }} />
-    </>
+    </QueryClientProvider>
   );
 }
