@@ -1,20 +1,12 @@
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useLocalSearchParams } from "expo-router";
-import { type ComponentType, useEffect } from "react";
-import { Controller, useForm } from "react-hook-form";
-import { Platform, Text, View } from "react-native";
-import {
-  useActivityByEditToken,
-  useUpdateActivity,
-} from "../../src/entities/activity/hooks";
-import {
-  type UpdateActivityForm,
-  type UpdateActivityFormInput,
-  updateActivitySchema,
-} from "../../src/entities/activity/schemas";
-import { toIsoDate } from "../../src/entities/activity/utils";
-import { useParticipants } from "../../src/entities/participant/hooks";
+import type { ComponentType } from "react";
+import { Controller } from "react-hook-form";
+import { Text, View } from "react-native";
+import type { UpdateActivityForm } from "../../src/entities/activity/schemas";
+import { getParticipantStatusText } from "../../src/entities/participant/utils";
+import { useManageActivityForm } from "../../src/features/manage-activity/useManageActivityForm";
+import { getRussianErrorMessage } from "../../src/shared/errors/getRussianErrorMessage";
 import { Button } from "../../src/shared/ui/Button";
+import { DateTimeInput } from "../../src/shared/ui/DateTimeInput";
 import { ErrorText } from "../../src/shared/ui/ErrorText";
 import { Input, type InputProps } from "../../src/shared/ui/Input";
 import { LoadingText } from "../../src/shared/ui/LoadingText";
@@ -23,52 +15,24 @@ import { Select } from "../../src/shared/ui/Select";
 import { Textarea } from "../../src/shared/ui/Textarea";
 import { BackLink } from "../_layout";
 
-function statusText(status: string) {
-  if (status === "going") return "иду";
-  if (status === "maybe") return "может быть";
-  if (status === "cant") return "не могу";
-  return status;
-}
-
 export default function ManagePage() {
-  const { editToken } = useLocalSearchParams<{ editToken: string }>();
-  const aq = useActivityByEditToken(editToken);
-  const activity = aq.data;
-  const pq = useParticipants(activity?.id);
-  const m = useUpdateActivity();
+  const {
+    activity,
+    activityQuery,
+    participants,
+    participantsQuery,
+    publicUrl,
+    form,
+    submit,
+    toggleStatus,
+    mutation,
+  } = useManageActivityForm();
   const {
     control,
     handleSubmit,
-    reset,
-    setValue,
     formState: { errors },
-  } = useForm<UpdateActivityFormInput, unknown, UpdateActivityForm>({
-    resolver: zodResolver(updateActivitySchema),
-    defaultValues: {
-      title: "",
-      description: "",
-      city: "",
-      location_text: "",
-      starts_at: "",
-      capacity: null,
-      cover_url: "",
-      status: "active",
-    },
-  });
-  useEffect(() => {
-    if (activity)
-      reset({
-        title: activity.title,
-        description: activity.description ?? "",
-        city: activity.city,
-        location_text: activity.location_text ?? "",
-        starts_at: activity.starts_at,
-        capacity: activity.capacity,
-        cover_url: activity.cover_url ?? "",
-        status: activity.status,
-      });
-  }, [activity, reset]);
-  if (aq.isLoading)
+  } = form;
+  if (activityQuery.isLoading)
     return (
       <Page>
         <LoadingText />
@@ -80,40 +44,15 @@ export default function ManagePage() {
         <BackLink />
         <Text>Активность не найдена</Text>
         <ErrorText>
-          {aq.error instanceof Error ? aq.error.message : null}
+          {activityQuery.error
+            ? getRussianErrorMessage(activityQuery.error, {
+                fallback: "Не удалось загрузить активность",
+              })
+            : null}
         </ErrorText>
       </Page>
     );
-  const path = `/a/${activity.slug}`;
-  const url =
-    Platform.OS === "web" && typeof window !== "undefined"
-      ? `${window.location.origin}${path}`
-      : path;
-  async function submit(v: UpdateActivityForm) {
-    const currentActivity = activity;
-    if (!currentActivity) return;
 
-    await m.mutateAsync({
-      id: currentActivity.id,
-      input: {
-        ...v,
-        starts_at: toIsoDate(v.starts_at),
-        capacity: v.capacity ?? null,
-        description: v.description || null,
-        location_text: v.location_text || null,
-        cover_url: v.cover_url || null,
-      },
-    });
-    await aq.refetch();
-  }
-  const toggle = () => {
-    const next = activity.status === "active" ? "cancelled" : "active";
-    setValue("status", next);
-    m.mutate(
-      { id: activity.id, input: { status: next } },
-      { onSuccess: () => aq.refetch() },
-    );
-  };
   const field = (
     name: keyof UpdateActivityForm,
     label: string,
@@ -125,6 +64,7 @@ export default function ManagePage() {
       render={({ field }) => (
         <C
           label={label}
+          nativeID={String(name)}
           value={field.value == null ? "" : String(field.value)}
           onChangeText={field.onChange}
           error={(errors[name]?.message as string) || ""}
@@ -132,11 +72,12 @@ export default function ManagePage() {
       )}
     />
   );
+
   return (
     <Page>
       <BackLink />
       <Text className="text-2xl font-bold">Управление активностью</Text>
-      <Text>Публичная ссылка: {url}</Text>
+      <Text>Публичная ссылка: {publicUrl}</Text>
       <Text>Копируй и отправляй вручную</Text>
       <View className="gap-3 border border-gray-400 p-3">
         <Text className="text-xl font-bold">Форма редактирования</Text>
@@ -144,7 +85,7 @@ export default function ManagePage() {
         {field("description", "описание", Textarea)}
         {field("city", "город")}
         {field("location_text", "место текстом")}
-        {field("starts_at", "дата и время")}
+        {field("starts_at", "дата и время", DateTimeInput)}
         {field("capacity", "лимит мест")}
         {field("cover_url", "ссылка на обложку")}
         <Controller
@@ -164,7 +105,7 @@ export default function ManagePage() {
           )}
         />
         <Button
-          title={m.isPending ? "Сохраняем..." : "Сохранить"}
+          title={mutation.isPending ? "Сохраняем..." : "Сохранить"}
           onPress={handleSubmit(submit)}
         />
         <Button
@@ -173,19 +114,24 @@ export default function ManagePage() {
               ? "Отменить активность"
               : "Вернуть активность"
           }
-          onPress={toggle}
+          onPress={toggleStatus}
         />
+        <ErrorText>{errors.root?.server?.message}</ErrorText>
         <ErrorText>
-          {m.error instanceof Error ? m.error.message : null}
+          {mutation.error
+            ? getRussianErrorMessage(mutation.error, {
+                fallback: "Не удалось сохранить активность",
+              })
+            : null}
         </ErrorText>
       </View>
       <Text className="text-xl font-bold">Список участников</Text>
-      {pq.isLoading ? <LoadingText /> : null}
-      {(pq.data ?? []).length === 0 ? <Text>Откликов пока нет.</Text> : null}
-      {(pq.data ?? []).map((p) => (
+      {participantsQuery.isLoading ? <LoadingText /> : null}
+      {participants.length === 0 ? <Text>Откликов пока нет.</Text> : null}
+      {participants.map((p) => (
         <Text key={p.id}>
-          - {p.name} / {statusText(p.status)} / {p.telegram || ""} /{" "}
-          {p.comment || ""}
+          - {p.name} / {getParticipantStatusText(p.status)} / {p.telegram || ""}{" "}
+          / {p.comment || ""}
         </Text>
       ))}
     </Page>

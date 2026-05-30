@@ -1,20 +1,11 @@
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "expo-router";
 import type { ComponentType } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { Controller } from "react-hook-form";
 import { Text } from "react-native";
-import { useCreateActivity } from "../src/entities/activity/hooks";
-import {
-  type CreateActivityForm,
-  type CreateActivityFormInput,
-  createActivitySchema,
-} from "../src/entities/activity/schemas";
-import {
-  generateActivitySlug,
-  generateEditToken,
-  toIsoDate,
-} from "../src/entities/activity/utils";
+import type { CreateActivityForm } from "../src/entities/activity/schemas";
+import { useCreateActivityForm } from "../src/features/create-activity/useCreateActivityForm";
+import { getRussianErrorMessage } from "../src/shared/errors/getRussianErrorMessage";
 import { Button } from "../src/shared/ui/Button";
+import { DateTimeInput } from "../src/shared/ui/DateTimeInput";
 import { ErrorText } from "../src/shared/ui/ErrorText";
 import { Input, type InputProps } from "../src/shared/ui/Input";
 import { Page } from "../src/shared/ui/Page";
@@ -22,38 +13,12 @@ import { Textarea } from "../src/shared/ui/Textarea";
 import { BackLink } from "./_layout";
 
 export default function CreatePage() {
-  const router = useRouter();
-  const m = useCreateActivity();
+  const { form, submit, mutation } = useCreateActivityForm();
   const {
     control,
     handleSubmit,
     formState: { errors },
-  } = useForm<CreateActivityFormInput, unknown, CreateActivityForm>({
-    resolver: zodResolver(createActivitySchema),
-    defaultValues: {
-      title: "",
-      description: "",
-      city: "",
-      location_text: "",
-      starts_at: "",
-      capacity: null,
-      cover_url: "",
-    },
-  });
-  async function submit(v: CreateActivityForm) {
-    const row = await m.mutateAsync({
-      ...v,
-      description: v.description || null,
-      location_text: v.location_text || null,
-      cover_url: v.cover_url || null,
-      capacity: v.capacity ?? null,
-      starts_at: toIsoDate(v.starts_at),
-      slug: generateActivitySlug(v.title),
-      edit_token: generateEditToken(),
-      status: "active",
-    });
-    router.replace(`/manage/${row.edit_token}`);
-  }
+  } = form;
   const field = (
     name: keyof CreateActivityForm,
     label: string,
@@ -65,6 +30,7 @@ export default function CreatePage() {
       render={({ field }) => (
         <C
           label={label}
+          nativeID={String(name)}
           value={field.value == null ? "" : String(field.value)}
           onChangeText={field.onChange}
           error={(errors[name]?.message as string) || ""}
@@ -80,14 +46,21 @@ export default function CreatePage() {
       {field("description", "описание", Textarea)}
       {field("city", "город, обязательно")}
       {field("location_text", "место текстом")}
-      {field("starts_at", "дата и время, обязательно")}
+      {field("starts_at", "дата и время, обязательно", DateTimeInput)}
       {field("capacity", "лимит мест, число или пусто")}
       {field("cover_url", "ссылка на обложку")}
       <Button
-        title={m.isPending ? "Сохраняем..." : "Создать"}
+        title={mutation.isPending ? "Сохраняем..." : "Создать"}
         onPress={handleSubmit(submit)}
       />
-      <ErrorText>{m.error instanceof Error ? m.error.message : null}</ErrorText>
+      <ErrorText>{errors.root?.server?.message}</ErrorText>
+      <ErrorText>
+        {mutation.error
+          ? getRussianErrorMessage(mutation.error, {
+              fallback: "Не удалось создать активность",
+            })
+          : null}
+      </ErrorText>
     </Page>
   );
 }

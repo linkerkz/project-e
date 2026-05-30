@@ -29,7 +29,8 @@
     "@types/react": "~19.2.2",
     "babel-preset-expo": "~56.0.14",
     "husky": "9.1.7",
-    "typescript": "~6.0.3"
+    "typescript": "~6.0.3",
+    "vitest": "^4.1.7"
   },
   "scripts": {
     "start": "expo start",
@@ -38,7 +39,8 @@
     "web": "expo start --web",
     "lint": "biome ci . && tsc --noEmit",
     "format": "biome check --write .",
-    "ci": "npm run lint",
+    "test": "vitest run",
+    "ci": "npm run lint && npm run test",
     "prepare": "husky"
   },
   "private": true

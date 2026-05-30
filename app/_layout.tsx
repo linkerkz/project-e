@@ -3,10 +3,11 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Link, Stack } from "expo-router";
 import { useState } from "react";
 import { Text, View } from "react-native";
+import { blurActiveElement } from "../src/shared/lib/blurActiveElement";
 
 export function BackLink() {
   return (
-    <Link href="/" asChild>
+    <Link href="/" asChild onPress={blurActiveElement}>
       <Text className="text-blue-700 underline">← На главную</Text>
     </Link>
   );
@@ -19,10 +20,10 @@ export default function RootLayout() {
       <View className="border-b border-gray-500 p-4">
         <Text className="text-3xl font-bold">Венти</Text>
         <View className="flex-row gap-4">
-          <Link href="/" asChild>
+          <Link href="/" asChild onPress={blurActiveElement}>
             <Text className="text-blue-700 underline">Главная</Text>
           </Link>
-          <Link href="/create" asChild>
+          <Link href="/create" asChild onPress={blurActiveElement}>
             <Text className="text-blue-700 underline">Создать</Text>
           </Link>
         </View>

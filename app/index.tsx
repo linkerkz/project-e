@@ -1,6 +1,8 @@
 import { Link } from "expo-router";
 import { Text, View } from "react-native";
 import { useActivities } from "../src/entities/activity/hooks";
+import { getRussianErrorMessage } from "../src/shared/errors/getRussianErrorMessage";
+import { blurActiveElement } from "../src/shared/lib/blurActiveElement";
 import { ErrorText } from "../src/shared/ui/ErrorText";
 import { LoadingText } from "../src/shared/ui/LoadingText";
 import { Page } from "../src/shared/ui/Page";
@@ -11,14 +13,20 @@ export default function HomePage() {
     <Page>
       <Text className="text-4xl font-bold">Венти</Text>
       <Text>Уродливые ссылки на активности, чтобы делать что-то с людьми</Text>
-      <Link href="/create" asChild>
+      <Link href="/create" asChild onPress={blurActiveElement}>
         <Text className="text-blue-700 underline text-lg">
           [Создать активность]
         </Text>
       </Link>
       <Text className="text-2xl font-bold">Последние активности:</Text>
       {q.isLoading ? <LoadingText /> : null}
-      <ErrorText>{q.error instanceof Error ? q.error.message : null}</ErrorText>
+      <ErrorText>
+        {q.error
+          ? getRussianErrorMessage(q.error, {
+              fallback: "Не удалось загрузить активности",
+            })
+          : null}
+      </ErrorText>
       {q.data?.length === 0 ? <Text>Активностей пока нет.</Text> : null}
       <View className="gap-2">
         {q.data?.map((a) => (
@@ -26,7 +34,7 @@ export default function HomePage() {
             <Text>
               {a.title} — {a.city} — {new Date(a.starts_at).toLocaleString()}
             </Text>
-            <Link href={`/a/${a.slug}`} asChild>
+            <Link href={`/a/${a.slug}`} asChild onPress={blurActiveElement}>
               <Text className="text-blue-700 underline">открыть</Text>
             </Link>
           </View>

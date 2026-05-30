@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { isValidActivityDateTime } from "./utils";
 
 const emptyToNull = (v: unknown) => (v === "" || v === undefined ? null : v);
 const capacity = z.preprocess(
@@ -11,7 +12,10 @@ export const createActivitySchema = z.object({
   description: z.string().optional(),
   city: z.string().min(1, "Город обязателен"),
   location_text: z.string().optional(),
-  starts_at: z.string().min(1, "Дата обязательна"),
+  starts_at: z
+    .string()
+    .min(1, "Дата обязательна")
+    .refine(isValidActivityDateTime, "Введите корректные дату и время"),
   capacity,
   cover_url: z.string().optional(),
 });
