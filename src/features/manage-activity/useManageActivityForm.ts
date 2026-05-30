@@ -1,6 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useLocalSearchParams } from "expo-router";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { Platform } from "react-native";
 import {
@@ -40,8 +40,10 @@ export function useManageActivityForm() {
     },
   });
 
+  const didInit = useRef(false);
+
   useEffect(() => {
-    if (activity) {
+    if (activity && !didInit.current) {
       form.reset({
         title: activity.title,
         description: activity.description ?? "",
@@ -52,6 +54,7 @@ export function useManageActivityForm() {
         cover_url: activity.cover_url ?? "",
         status: activity.status,
       });
+      didInit.current = true;
     }
   }, [activity, form.reset]);
 

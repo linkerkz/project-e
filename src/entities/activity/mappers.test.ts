@@ -1,4 +1,9 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
+
+vi.mock("expo-crypto", () => ({
+  randomUUID: () => "123e4567-e89b-12d3-a456-426614174000",
+}));
+
 import {
   mapCreateActivityFormToInput,
   mapUpdateActivityFormToInput,
@@ -26,8 +31,8 @@ describe("activity/mappers", () => {
       status: "active",
     });
     expect(input.starts_at).toBe(new Date("2026-05-30T12:30").toISOString());
-    expect(input.slug).toMatch(/^activity-[a-z0-9]{6}$/);
-    expect(input.edit_token).toMatch(/^[a-z0-9]{18}$/);
+    expect(input.slug).toMatch(/^тестовая-активность-[a-z0-9]{6}$/);
+    expect(input.edit_token).toMatch(/^[a-f0-9]{32}$/);
   });
 
   it("сохраняет заполненные необязательные поля при создании", () => {

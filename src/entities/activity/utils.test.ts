@@ -1,4 +1,9 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
+
+vi.mock("expo-crypto", () => ({
+  randomUUID: () => "123e4567-e89b-12d3-a456-426614174000",
+}));
+
 import {
   generateActivitySlug,
   generateEditToken,
@@ -12,6 +17,7 @@ import {
 describe("activity/utils", () => {
   it("преобразует название в slug", () => {
     expect(slugifyTitle("  My Cool Activity!  ")).toBe("my-cool-activity");
+    expect(slugifyTitle("  Кириллица 123!  ")).toBe("кириллица-123");
     expect(slugifyTitle("!!!")).toBe("activity");
   });
 
@@ -21,8 +27,8 @@ describe("activity/utils", () => {
     expect(slug).toMatch(/^my-activity-[a-z0-9]{6}$/);
   });
 
-  it("генерирует edit token из 18 символов", () => {
-    expect(generateEditToken()).toMatch(/^[a-z0-9]{18}$/);
+  it("генерирует edit token из UUID без дефисов", () => {
+    expect(generateEditToken()).toMatch(/^[a-f0-9]{32}$/);
   });
 
   it("проверяет корректность даты", () => {

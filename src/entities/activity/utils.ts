@@ -1,9 +1,11 @@
+import * as Crypto from "expo-crypto";
+
 export function slugifyTitle(title: string) {
   return (
     title
       .toLowerCase()
       .trim()
-      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/[^\p{L}\p{N}]+/gu, "-")
       .replace(/^-+|-+$/g, "") || "activity"
   );
 }
@@ -17,7 +19,7 @@ export function generateActivitySlug(title: string) {
 }
 
 export function generateEditToken() {
-  return `${shortRandom()}${shortRandom()}${shortRandom()}`;
+  return Crypto.randomUUID().replaceAll("-", "");
 }
 
 function padDatePart(value: number) {
