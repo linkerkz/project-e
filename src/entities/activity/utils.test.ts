@@ -45,9 +45,14 @@ describe("activity/utils", () => {
   });
 
   it("преобразует дату с бэка в значение для datetime-local", () => {
-    expect(toDateTimeLocalInputValue("2006-02-01T06:22:00+00:00")).toMatch(
-      /^2006-02-01T\d{2}:22$/,
-    );
+    const value = "2006-02-01T06:22:00+00:00";
+    const date = new Date(value);
+    const pad = (part: number) => String(part).padStart(2, "0");
+    const expected = `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(
+      date.getDate(),
+    )}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+
+    expect(toDateTimeLocalInputValue(value)).toBe(expected);
     expect(toDateTimeLocalInputValue("не дата")).toBe("не дата");
   });
 
