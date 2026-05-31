@@ -1,74 +1,30 @@
-import type { ComponentType } from "react";
-import { Controller } from "react-hook-form";
-import { Image, Text, View } from "react-native";
-import type { ParticipantForm } from "../../src/entities/participant/schemas";
+import { Image, Text } from "react-native";
 import { getParticipantStatusText } from "../../src/entities/participant/utils";
-import { useActivityResponseForm } from "../../src/features/respond-to-activity/useActivityResponseForm";
-import { getRussianErrorMessage } from "../../src/shared/errors/getRussianErrorMessage";
-import { Button } from "../../src/shared/ui/Button";
-import { ErrorText } from "../../src/shared/ui/ErrorText";
-import { Input, type InputProps } from "../../src/shared/ui/Input";
-import { LoadingText } from "../../src/shared/ui/LoadingText";
+import { ResponseForm } from "../../src/features/respond-to-activity/ResponseForm";
+import { useRespondToActivityForm } from "../../src/features/respond-to-activity/useRespondToActivityForm";
+import { ActivityNotFound } from "../../src/shared/ui/ActivityNotFound";
+import { BackLink } from "../../src/shared/ui/BackLink";
+import { LoadingPage } from "../../src/shared/ui/LoadingPage";
 import { Page } from "../../src/shared/ui/Page";
-import { Select } from "../../src/shared/ui/Select";
-import { Textarea } from "../../src/shared/ui/Textarea";
-import { BackLink } from "../_layout";
+import { ParticipantList } from "../../src/shared/ui/ParticipantList";
 
 export default function ActivityPage() {
   const {
     activity,
-    activityQuery,
+    isLoading,
+    loadError,
     participants,
-    participantsQuery,
+    participantsLoading,
     stats,
     form,
     submit,
-    mutation,
-  } = useActivityResponseForm();
-  const {
-    control,
-    handleSubmit,
-    formState: { errors },
-  } = form;
-  if (activityQuery.isLoading)
-    return (
-      <Page>
-        <LoadingText />
-      </Page>
-    );
-  if (!activity)
-    return (
-      <Page>
-        <BackLink />
-        <Text>Активность не найдена</Text>
-        <ErrorText>
-          {activityQuery.error
-            ? getRussianErrorMessage(activityQuery.error, {
-                fallback: "Не удалось загрузить активность",
-              })
-            : null}
-        </ErrorText>
-      </Page>
-    );
-  const field = (
-    name: keyof ParticipantForm,
-    label: string,
-    C: ComponentType<InputProps> = Input,
-  ) => (
-    <Controller
-      control={control}
-      name={name}
-      render={({ field }) => (
-        <C
-          label={label}
-          nativeID={String(name)}
-          value={field.value}
-          onChangeText={field.onChange}
-          error={(errors[name]?.message as string) || ""}
-        />
-      )}
-    />
-  );
+    isSaving,
+    hasResponded,
+  } = useRespondToActivityForm();
+
+  if (isLoading) return <LoadingPage />;
+  if (!activity) return <ActivityNotFound error={loadError} />;
+
   return (
     <Page>
       <BackLink />
@@ -95,52 +51,19 @@ export default function ActivityPage() {
           {stats.going} / {activity.capacity} идут
         </Text>
       ) : null}
-      {activity.status !== "cancelled" ? (
-        <View className="gap-3 border border-gray-400 p-3">
-          <Text className="text-xl font-bold">Форма отклика</Text>
-          {field("name", "имя, обязательно")}
-          {field("telegram", "телеграм")}
-          <Controller
-            control={control}
-            name="status"
-            render={({ field }) => (
-              <Select
-                label="статус"
-                value={field.value}
-                onChange={field.onChange}
-                options={[
-                  { value: "going", label: "иду" },
-                  { value: "maybe", label: "может быть" },
-                  { value: "cant", label: "не могу" },
-                ]}
-                error={errors.status?.message}
-              />
-            )}
-          />
-          {field("comment", "комментарий", Textarea)}
-          <Button
-            title={mutation.isPending ? "Сохраняем..." : "Отправить отклик"}
-            onPress={handleSubmit(submit)}
-          />
-          <ErrorText>{errors.root?.server?.message}</ErrorText>
-          <ErrorText>
-            {mutation.error
-              ? getRussianErrorMessage(mutation.error, {
-                  fallback: "Не удалось отправить отклик",
-                })
-              : null}
-          </ErrorText>
-        </View>
+      {activity.status !== "cancelled" && !hasResponded ? (
+        <ResponseForm form={form} isSaving={isSaving} onSubmit={submit} />
       ) : null}
-      <Text className="text-xl font-bold">Список участников</Text>
-      {participantsQuery.isLoading ? <LoadingText /> : null}
-      {participants.length === 0 ? <Text>Откликов пока нет.</Text> : null}
-      {participants.map((p) => (
-        <Text key={p.id}>
-          - {p.name} / {getParticipantStatusText(p.status)} / {p.telegram || ""}{" "}
-          / {p.comment || ""}
+      {activity.status !== "cancelled" && hasResponded ? (
+        <Text className="font-bold">
+          Ты уже откликнулся с этого устройства.
         </Text>
-      ))}
+      ) : null}
+      <ParticipantList
+        participants={participants}
+        loading={participantsLoading}
+        statusText={getParticipantStatusText}
+      />
     </Page>
   );
 }

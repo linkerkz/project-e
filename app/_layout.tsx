@@ -1,17 +1,9 @@
 import "../global.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { Link, Stack } from "expo-router";
+import { Stack } from "expo-router";
 import { useState } from "react";
 import { Text, View } from "react-native";
-import { blurActiveElement } from "../src/shared/lib/blurActiveElement";
-
-export function BackLink() {
-  return (
-    <Link href="/" asChild onPress={blurActiveElement}>
-      <Text className="text-blue-700 underline">← На главную</Text>
-    </Link>
-  );
-}
+import { TextLink } from "../src/shared/ui/TextLink";
 
 export default function RootLayout() {
   const [client] = useState(() => new QueryClient());
@@ -20,12 +12,8 @@ export default function RootLayout() {
       <View className="border-b border-gray-500 p-4">
         <Text className="text-3xl font-bold">Венти</Text>
         <View className="flex-row gap-4">
-          <Link href="/" asChild onPress={blurActiveElement}>
-            <Text className="text-blue-700 underline">Главная</Text>
-          </Link>
-          <Link href="/create" asChild onPress={blurActiveElement}>
-            <Text className="text-blue-700 underline">Создать</Text>
-          </Link>
+          <TextLink href="/">Главная</TextLink>
+          <TextLink href="/create">Создать</TextLink>
         </View>
       </View>
       <Stack screenOptions={{ headerShown: false }} />
