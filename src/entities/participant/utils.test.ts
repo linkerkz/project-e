@@ -1,10 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { Participant } from "./types";
-import {
-  countParticipantsByStatus,
-  getParticipantStats,
-  getParticipantStatusText,
-} from "./utils";
+import { getParticipantStats, getParticipantStatusText } from "./utils";
 
 const participants: Participant[] = [
   {
@@ -45,12 +41,6 @@ describe("participant/utils", () => {
     expect(getParticipantStatusText("maybe")).toBe("может быть");
     expect(getParticipantStatusText("cant")).toBe("не могу");
     expect(getParticipantStatusText("unknown")).toBe("unknown");
-  });
-
-  it("считает участников по статусу", () => {
-    expect(countParticipantsByStatus(participants, "going")).toBe(2);
-    expect(countParticipantsByStatus(participants, "maybe")).toBe(1);
-    expect(countParticipantsByStatus(participants, "cant")).toBe(0);
   });
 
   it("возвращает статистику участников", () => {

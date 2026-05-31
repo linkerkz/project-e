@@ -13,12 +13,12 @@ export function useParticipants(activityId?: string) {
   });
 }
 
-export function useCreateParticipant(_activityId: string) {
-  const qc = useQueryClient();
+export function useCreateParticipant() {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: createParticipant,
     onSuccess: (_data, variables) =>
-      qc.invalidateQueries({
+      queryClient.invalidateQueries({
         queryKey: participantKeys.list(variables.activity_id),
       }),
   });

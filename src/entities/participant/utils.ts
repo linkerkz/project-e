@@ -1,24 +1,25 @@
-import type { Participant } from "./types";
+import type { Participant, ParticipantStatus } from "./types";
+
+export const participantStatusLabels: Record<ParticipantStatus, string> = {
+  going: "иду",
+  maybe: "может быть",
+  cant: "не могу",
+};
+
+export const participantStatusOptions = (
+  Object.keys(participantStatusLabels) as ParticipantStatus[]
+).map((value) => ({ value, label: participantStatusLabels[value] }));
 
 export function getParticipantStatusText(status: string) {
-  if (status === "going") return "иду";
-  if (status === "maybe") return "может быть";
-  if (status === "cant") return "не могу";
-  return status;
-}
-
-export function countParticipantsByStatus(
-  participants: Participant[],
-  status: string,
-) {
-  return participants.filter((participant) => participant.status === status)
-    .length;
+  return isParticipantStatus(status) ? participantStatusLabels[status] : status;
 }
 
 export function getParticipantStats(participants: Participant[]) {
-  return {
-    going: countParticipantsByStatus(participants, "going"),
-    maybe: countParticipantsByStatus(participants, "maybe"),
-    cant: countParticipantsByStatus(participants, "cant"),
-  };
+  const stats = { going: 0, maybe: 0, cant: 0 };
+  for (const { status } of participants) stats[status] += 1;
+  return stats;
+}
+
+function isParticipantStatus(status: string): status is ParticipantStatus {
+  return status in participantStatusLabels;
 }
