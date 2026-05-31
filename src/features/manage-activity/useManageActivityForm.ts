@@ -1,24 +1,23 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useLocalSearchParams } from "expo-router";
-import { useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
-import { Platform } from "react-native";
 import {
   useActivityByEditToken,
   useUpdateActivity,
 } from "../../entities/activity/hooks";
-import { mapUpdateActivityFormToInput } from "../../entities/activity/mappers";
+import {
+  mapActivityToUpdateForm,
+  mapUpdateActivityFormToInput,
+} from "../../entities/activity/mappers";
 import {
   type UpdateActivityForm,
   type UpdateActivityFormInput,
   updateActivitySchema,
 } from "../../entities/activity/schemas";
-import {
-  getNextActivityStatus,
-  toDateTimeLocalInputValue,
-} from "../../entities/activity/utils";
+import { getNextActivityStatus } from "../../entities/activity/utils";
 import { useParticipants } from "../../entities/participant/hooks";
-import { getRussianErrorMessage } from "../../shared/errors/getRussianErrorMessage";
+import { buildActivityPublicUrl } from "../../shared/lib/buildActivityPublicUrl";
+import { setFormServerError } from "../../shared/lib/setFormServerError";
 
 export function useManageActivityForm() {
   const { editToken } = useLocalSearchParams<{ editToken: string }>();
@@ -28,91 +27,57 @@ export function useManageActivityForm() {
   const mutation = useUpdateActivity();
   const form = useForm<UpdateActivityFormInput, unknown, UpdateActivityForm>({
     resolver: zodResolver(updateActivitySchema),
-    defaultValues: {
-      title: "",
-      description: "",
-      city: "",
-      location_text: "",
-      starts_at: "",
-      capacity: null,
-      cover_url: "",
-      status: "active",
-    },
+    values: activity ? mapActivityToUpdateForm(activity) : undefined,
+    resetOptions: { keepDirtyValues: true },
   });
 
-  const didInit = useRef(false);
-
-  useEffect(() => {
-    if (activity && !didInit.current) {
-      form.reset({
-        title: activity.title,
-        description: activity.description ?? "",
-        city: activity.city,
-        location_text: activity.location_text ?? "",
-        starts_at: toDateTimeLocalInputValue(activity.starts_at),
-        capacity: activity.capacity,
-        cover_url: activity.cover_url ?? "",
-        status: activity.status,
-      });
-      didInit.current = true;
-    }
-  }, [activity, form.reset]);
-
-  const path = activity ? `/a/${activity.slug}` : "";
-  const publicUrl =
-    Platform.OS === "web" && typeof window !== "undefined" && path
-      ? `${window.location.origin}${path}`
-      : path;
+  const publicUrl = activity ? buildActivityPublicUrl(activity.slug) : "";
 
   async function submit(values: UpdateActivityForm) {
-    const currentActivity = activity;
-    if (!currentActivity) return;
+    if (!activity) return;
 
     try {
       form.clearErrors("root.server");
       await mutation.mutateAsync({
-        id: currentActivity.id,
+        id: activity.id,
         input: mapUpdateActivityFormToInput(values),
       });
-      await activityQuery.refetch();
     } catch (error) {
-      form.setError("root.server", {
-        message: getRussianErrorMessage(error, {
-          fallback: "Не удалось сохранить активность",
-        }),
-      });
+      setFormServerError(
+        form.setError,
+        "Не удалось сохранить активность",
+        error,
+      );
     }
   }
 
-  function toggleStatus() {
+  async function toggleStatus() {
     if (!activity) return;
 
     const next = getNextActivityStatus(activity.status);
     form.setValue("status", next);
-    mutation.mutate(
-      { id: activity.id, input: { status: next } },
-      {
-        onSuccess: () => activityQuery.refetch(),
-        onError: (error) => {
-          form.setError("root.server", {
-            message: getRussianErrorMessage(error, {
-              fallback: "Не удалось изменить статус активности",
-            }),
-          });
-        },
-      },
-    );
+    try {
+      form.clearErrors("root.server");
+      await mutation.mutateAsync({ id: activity.id, input: { status: next } });
+    } catch (error) {
+      setFormServerError(
+        form.setError,
+        "Не удалось изменить статус активности",
+        error,
+      );
+    }
   }
 
   return {
     activity,
-    activityQuery,
+    isLoading: activityQuery.isLoading,
+    loadError: activityQuery.error,
     participants: participantsQuery.data ?? [],
-    participantsQuery,
+    participantsLoading: participantsQuery.isLoading,
     publicUrl,
     form,
     submit,
     toggleStatus,
-    mutation,
+    isSaving: mutation.isPending,
   };
 }

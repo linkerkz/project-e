@@ -12,49 +12,57 @@ import {
   participantSchema,
 } from "../../entities/participant/schemas";
 import { getParticipantStats } from "../../entities/participant/utils";
-import { getRussianErrorMessage } from "../../shared/errors/getRussianErrorMessage";
+import { setFormServerError } from "../../shared/lib/setFormServerError";
+import { useRespondedFlag } from "./useRespondedFlag";
 
-export function useActivityResponseForm() {
+const emptyResponse: ParticipantForm = {
+  name: "",
+  telegram: "",
+  status: "going",
+  comment: "",
+};
+
+export function useRespondToActivityForm() {
   const { slug } = useLocalSearchParams<{ slug: string }>();
   const activityQuery = useActivityBySlug(slug);
   const activity = activityQuery.data;
   const participantsQuery = useParticipants(activity?.id);
-  const mutation = useCreateParticipant(activity?.id ?? "");
+  const mutation = useCreateParticipant();
   const form = useForm<ParticipantForm>({
     resolver: zodResolver(participantSchema),
-    defaultValues: { name: "", telegram: "", status: "going", comment: "" },
+    defaultValues: emptyResponse,
   });
+
+  const { hasResponded, markResponded } = useRespondedFlag(activity?.id);
 
   const participants = participantsQuery.data ?? [];
   const stats = getParticipantStats(participants);
 
   async function submit(values: ParticipantForm) {
-    const currentActivity = activity;
-    if (!currentActivity) return;
+    if (!activity) return;
 
     try {
       form.clearErrors("root.server");
       await mutation.mutateAsync(
-        mapParticipantFormToInput(currentActivity.id, values),
+        mapParticipantFormToInput(activity.id, values),
       );
-      form.reset({ name: "", telegram: "", status: "going", comment: "" });
+      form.reset(emptyResponse);
+      await markResponded();
     } catch (error) {
-      form.setError("root.server", {
-        message: getRussianErrorMessage(error, {
-          fallback: "Не удалось отправить отклик",
-        }),
-      });
+      setFormServerError(form.setError, "Не удалось отправить отклик", error);
     }
   }
 
   return {
     activity,
-    activityQuery,
+    isLoading: activityQuery.isLoading,
+    loadError: activityQuery.error,
     participants,
-    participantsQuery,
+    participantsLoading: participantsQuery.isLoading,
     stats,
     form,
     submit,
-    mutation,
+    isSaving: mutation.isPending,
+    hasResponded,
   };
 }

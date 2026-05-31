@@ -8,7 +8,7 @@ import {
   type CreateActivityFormInput,
   createActivitySchema,
 } from "../../entities/activity/schemas";
-import { getRussianErrorMessage } from "../../shared/errors/getRussianErrorMessage";
+import { setFormServerError } from "../../shared/lib/setFormServerError";
 
 export function useCreateActivityForm() {
   const router = useRouter();
@@ -29,22 +29,18 @@ export function useCreateActivityForm() {
   async function submit(values: CreateActivityForm) {
     try {
       form.clearErrors("root.server");
-      const row = await mutation.mutateAsync(
+      const activity = await mutation.mutateAsync(
         mapCreateActivityFormToInput(values),
       );
-      router.replace(`/manage/${row.edit_token}`);
+      router.replace(`/manage/${activity.edit_token}`);
     } catch (error) {
-      form.setError("root.server", {
-        message: getRussianErrorMessage(error, {
-          fallback: "Не удалось создать активность",
-        }),
-      });
+      setFormServerError(form.setError, "Не удалось создать активность", error);
     }
   }
 
   return {
     form,
     submit,
-    mutation,
+    isSaving: mutation.isPending,
   };
 }
