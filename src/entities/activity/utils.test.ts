@@ -1,0 +1,63 @@
+import { describe, expect, it, vi } from "vitest";
+
+vi.mock("expo-crypto", () => ({
+  randomUUID: () => "123e4567-e89b-12d3-a456-426614174000",
+}));
+
+import {
+  generateActivitySlug,
+  generateEditToken,
+  getNextActivityStatus,
+  isValidActivityDateTime,
+  slugifyTitle,
+  toDateTimeLocalInputValue,
+  toIsoDate,
+} from "./utils";
+
+describe("activity/utils", () => {
+  it("преобразует название в slug", () => {
+    expect(slugifyTitle("  My Cool Activity!  ")).toBe("my-cool-activity");
+    expect(slugifyTitle("  Кириллица 123!  ")).toBe("кириллица-123");
+    expect(slugifyTitle("!!!")).toBe("activity");
+  });
+
+  it("генерирует slug с коротким случайным суффиксом", () => {
+    const slug = generateActivitySlug("My Activity");
+
+    expect(slug).toMatch(/^my-activity-[a-z0-9]{6}$/);
+  });
+
+  it("генерирует edit token из UUID без дефисов", () => {
+    expect(generateEditToken()).toMatch(/^[a-f0-9]{32}$/);
+  });
+
+  it("проверяет корректность даты", () => {
+    expect(isValidActivityDateTime("2026-05-30T12:30")).toBe(true);
+    expect(isValidActivityDateTime("12 мая")).toBe(false);
+    expect(isValidActivityDateTime("")).toBe(false);
+  });
+
+  it("преобразует дату в ISO, если дата корректна", () => {
+    expect(toIsoDate("2026-05-30T12:30")).toBe(
+      new Date("2026-05-30T12:30").toISOString(),
+    );
+    expect(toIsoDate("12 мая")).toBe("12 мая");
+  });
+
+  it("преобразует дату с бэка в значение для datetime-local", () => {
+    const value = "2006-02-01T06:22:00+00:00";
+    const date = new Date(value);
+    const pad = (part: number) => String(part).padStart(2, "0");
+    const expected = `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(
+      date.getDate(),
+    )}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+
+    expect(toDateTimeLocalInputValue(value)).toBe(expected);
+    expect(toDateTimeLocalInputValue("не дата")).toBe("не дата");
+  });
+
+  it("возвращает следующий статус активности", () => {
+    expect(getNextActivityStatus("active")).toBe("cancelled");
+    expect(getNextActivityStatus("cancelled")).toBe("active");
+  });
+});

@@ -1,30 +1,69 @@
-import { Link, useLocalSearchParams } from "expo-router";
-import { ScrollView, Text, View } from "react-native";
-import { BackLink, SITE_PAGES } from "../_layout";
+import { Image, Text } from "react-native";
+import { getParticipantStatusText } from "../../src/entities/participant/utils";
+import { ResponseForm } from "../../src/features/respond-to-activity/ResponseForm";
+import { useRespondToActivityForm } from "../../src/features/respond-to-activity/useRespondToActivityForm";
+import { ActivityNotFound } from "../../src/shared/ui/ActivityNotFound";
+import { BackLink } from "../../src/shared/ui/BackLink";
+import { LoadingPage } from "../../src/shared/ui/LoadingPage";
+import { Page } from "../../src/shared/ui/Page";
+import { ParticipantList } from "../../src/shared/ui/ParticipantList";
 
-export default function ArticlePage() {
-  const { slug } = useLocalSearchParams<{ slug: string }>();
-  const title = slug ? slug.replaceAll("-", " ") : "article";
+export default function ActivityPage() {
+  const {
+    activity,
+    isLoading,
+    loadError,
+    participants,
+    participantsLoading,
+    stats,
+    form,
+    submit,
+    isSaving,
+    hasResponded,
+  } = useRespondToActivityForm();
+
+  if (isLoading) return <LoadingPage />;
+  if (!activity) return <ActivityNotFound error={loadError} />;
 
   return (
-    <ScrollView className="flex-1 bg-slate-50">
-      <View className="gap-4 p-5">
-        <BackLink />
-        <Text className="text-2xl font-bold capitalize text-gray-950">{title}</Text>
-        <Text className="text-base leading-6 text-gray-700">
-          Dynamic route: /a/{slug}. This page proves nested pages render on web and have a backlink
-          to the all-pages index.
+    <Page>
+      <BackLink />
+      {activity.cover_url ? (
+        <Image
+          source={{ uri: activity.cover_url }}
+          className="h-48 w-full"
+          resizeMode="contain"
+        />
+      ) : null}
+      <Text className="text-3xl font-bold">{activity.title}</Text>
+      <Text>{activity.city}</Text>
+      <Text>{activity.location_text}</Text>
+      <Text>{new Date(activity.starts_at).toLocaleString()}</Text>
+      <Text>{activity.description}</Text>
+      {activity.status === "cancelled" ? (
+        <Text className="font-bold text-red-700">ОТМЕНЕНО</Text>
+      ) : null}
+      <Text>
+        Идут: {stats.going} Может быть: {stats.maybe} Не могут: {stats.cant}
+      </Text>
+      {activity.capacity ? (
+        <Text>
+          {stats.going} / {activity.capacity} идут
         </Text>
-
-        <View className="gap-3 rounded-xl border border-gray-200 bg-white p-4">
-          <Text className="text-lg font-bold text-gray-950">Other pages</Text>
-          {SITE_PAGES.filter((page) => page.href !== `/a/${slug}`).map((page) => (
-            <Link key={page.href} href={page.href} asChild>
-              <Text className="text-base text-blue-600 underline">{page.label}</Text>
-            </Link>
-          ))}
-        </View>
-      </View>
-    </ScrollView>
+      ) : null}
+      {activity.status !== "cancelled" && !hasResponded ? (
+        <ResponseForm form={form} isSaving={isSaving} onSubmit={submit} />
+      ) : null}
+      {activity.status !== "cancelled" && hasResponded ? (
+        <Text className="font-bold">
+          Ты уже откликнулся с этого устройства.
+        </Text>
+      ) : null}
+      <ParticipantList
+        participants={participants}
+        loading={participantsLoading}
+        statusText={getParticipantStatusText}
+      />
+    </Page>
   );
 }

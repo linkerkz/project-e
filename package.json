@@ -9,6 +9,7 @@
     "@tanstack/react-query": "^5.100.14",
     "expo": "~56.0.8",
     "expo-constants": "~56.0.16",
+    "expo-crypto": "~56.0.4",
     "expo-linking": "~56.0.13",
     "expo-router": "~56.2.8",
     "expo-status-bar": "~56.0.4",
@@ -25,15 +26,25 @@
     "zustand": "^5.0.14"
   },
   "devDependencies": {
+    "@biomejs/biome": "2.4.16",
     "@types/react": "~19.2.2",
     "babel-preset-expo": "~56.0.14",
-    "typescript": "~6.0.3"
+    "dependency-cruiser": "^17.4.3",
+    "husky": "9.1.7",
+    "typescript": "~6.0.3",
+    "vitest": "^4.1.7"
   },
   "scripts": {
     "start": "expo start",
     "android": "expo start --android",
     "ios": "expo start --ios",
-    "web": "expo start --web"
+    "web": "expo start --web",
+    "lint": "biome ci . && tsc --noEmit",
+    "format": "biome check --write .",
+    "arch": "depcruise src app --config .dependency-cruiser.cjs",
+    "test": "vitest run",
+    "ci": "npm run lint && npm run arch && npm run test",
+    "prepare": "husky"
   },
   "private": true
 }
