@@ -21,5 +21,5 @@ export function getParticipantStats(participants: Participant[]) {
 }
 
 function isParticipantStatus(status: string): status is ParticipantStatus {
-  return status in participantStatusLabels;
+  return Object.hasOwn(participantStatusLabels, status);
 }
