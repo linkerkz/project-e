@@ -1,5 +1,6 @@
 import type { ChangeEvent } from "react";
-import { Platform, Text, View } from "react-native";
+import { Platform } from "react-native";
+import { FieldShell } from "./FieldShell";
 import { Input, type InputProps } from "./Input";
 
 export function DateTimeInput({
@@ -15,8 +16,7 @@ export function DateTimeInput({
     const inputId = nativeID ? String(nativeID) : undefined;
 
     return (
-      <View className="gap-1">
-        <Text className="font-bold">{label}</Text>
+      <FieldShell label={label} error={error}>
         <input
           id={inputId}
           name={inputId}
@@ -28,8 +28,7 @@ export function DateTimeInput({
             onChangeText?.(event.target.value)
           }
         />
-        {error ? <Text className="text-red-700">{error}</Text> : null}
-      </View>
+      </FieldShell>
     );
   }
 

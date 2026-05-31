@@ -1,21 +1,16 @@
 import type { ComponentProps, ReactNode } from "react";
-import { Text, TextInput, View } from "react-native";
+import { TextInput } from "react-native";
+import { FieldShell } from "./FieldShell";
 
-type InputProps = ComponentProps<typeof TextInput> & {
+export type InputProps = ComponentProps<typeof TextInput> & {
   label: ReactNode;
-  error?: string | null | undefined;
+  error?: string;
 };
 
 export function Input({ label, error, ...props }: InputProps) {
   return (
-    <View className="gap-1">
-      <Text className="font-bold">{label}</Text>
+    <FieldShell label={label} error={error}>
       <TextInput className="border border-gray-500 bg-white p-2" {...props} />
-      {typeof error === "string" && error ? (
-        <Text className="text-red-700">{error}</Text>
-      ) : null}
-    </View>
+    </FieldShell>
   );
 }
-
-export type { InputProps };

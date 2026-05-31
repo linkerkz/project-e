@@ -1,5 +1,16 @@
 import { Text } from "react-native";
+import { getRussianErrorMessage } from "../errors/getRussianErrorMessage";
 
-export function ErrorText({ children }: { children?: string | null }) {
-  return children ? <Text className="text-red-700">{children}</Text> : null;
+type Props = {
+  error?: unknown;
+  fallback?: string;
+  children?: string | null;
+};
+
+export function ErrorText({ error, fallback = "", children }: Props) {
+  const message =
+    error != null ? getRussianErrorMessage(error, { fallback }) : children;
+  if (!message) return null;
+
+  return <Text className="text-red-700">{message}</Text>;
 }

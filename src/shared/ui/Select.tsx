@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
-import { Text, View } from "react-native";
+import { View } from "react-native";
 import { Button } from "./Button";
+import { FieldShell } from "./FieldShell";
 
 type SelectOption<Value extends string> = {
   value: Value;
@@ -12,7 +13,7 @@ type SelectProps<Value extends string> = {
   value: Value;
   onChange: (value: Value) => void;
   options: SelectOption<Value>[];
-  error?: ReactNode;
+  error?: string;
 };
 
 export function Select<Value extends string>({
@@ -23,8 +24,7 @@ export function Select<Value extends string>({
   error,
 }: SelectProps<Value>) {
   return (
-    <View className="gap-1">
-      <Text className="font-bold">{label}</Text>
+    <FieldShell label={label} error={error}>
       <View className="flex-row flex-wrap gap-2">
         {options.map((option) => (
           <Button
@@ -34,7 +34,6 @@ export function Select<Value extends string>({
           />
         ))}
       </View>
-      {error ? <Text className="text-red-700">{error}</Text> : null}
-    </View>
+    </FieldShell>
   );
 }
