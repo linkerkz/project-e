@@ -17,7 +17,8 @@
       "!**/web-build",
       "!**/coverage",
       "!**/ios",
-      "!**/android"
+      "!**/android",
+      "!venty"
     ]
   },
   "formatter": {

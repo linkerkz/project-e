@@ -29,6 +29,7 @@
     "@biomejs/biome": "2.4.16",
     "@types/react": "~19.2.2",
     "babel-preset-expo": "~56.0.14",
+    "dependency-cruiser": "^17.4.3",
     "husky": "9.1.7",
     "typescript": "~6.0.3",
     "vitest": "^4.1.7"
@@ -40,8 +41,9 @@
     "web": "expo start --web",
     "lint": "biome ci . && tsc --noEmit",
     "format": "biome check --write .",
+    "arch": "depcruise src app --config .dependency-cruiser.cjs",
     "test": "vitest run",
-    "ci": "npm run lint && npm run test",
+    "ci": "npm run lint && npm run arch && npm run test",
     "prepare": "husky"
   },
   "private": true
