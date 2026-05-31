@@ -1,16 +1,25 @@
-import type { CreateActivityForm, UpdateActivityForm } from "./schemas";
-import type { CreateActivityInput, UpdateActivityInput } from "./types";
-import { generateActivitySlug, generateEditToken, toIsoDate } from "./utils";
+import type {
+  CreateActivityForm,
+  UpdateActivityForm,
+  UpdateActivityFormInput,
+} from "./schemas";
+import type {
+  Activity,
+  CreateActivityInput,
+  UpdateActivityInput,
+} from "./types";
+import {
+  generateActivitySlug,
+  generateEditToken,
+  toDateTimeLocalInputValue,
+  toIsoDate,
+} from "./utils";
 
 export function mapCreateActivityFormToInput(
   form: CreateActivityForm,
 ): CreateActivityInput {
   return {
     ...form,
-    description: form.description || null,
-    location_text: form.location_text || null,
-    cover_url: form.cover_url || null,
-    capacity: form.capacity ?? null,
     starts_at: toIsoDate(form.starts_at),
     slug: generateActivitySlug(form.title),
     edit_token: generateEditToken(),
@@ -24,9 +33,20 @@ export function mapUpdateActivityFormToInput(
   return {
     ...form,
     starts_at: toIsoDate(form.starts_at),
-    capacity: form.capacity ?? null,
-    description: form.description || null,
-    location_text: form.location_text || null,
-    cover_url: form.cover_url || null,
+  };
+}
+
+export function mapActivityToUpdateForm(
+  activity: Activity,
+): UpdateActivityFormInput {
+  return {
+    title: activity.title,
+    description: activity.description ?? "",
+    city: activity.city,
+    location_text: activity.location_text ?? "",
+    starts_at: toDateTimeLocalInputValue(activity.starts_at),
+    capacity: activity.capacity,
+    cover_url: activity.cover_url ?? "",
+    status: activity.status,
   };
 }

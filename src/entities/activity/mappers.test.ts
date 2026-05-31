@@ -13,12 +13,12 @@ describe("activity/mappers", () => {
   it("преобразует форму создания в payload для API", () => {
     const input = mapCreateActivityFormToInput({
       title: "Тестовая активность",
-      description: "",
+      description: null,
       city: "Москва",
-      location_text: "",
+      location_text: null,
       starts_at: "2026-05-30T12:30",
       capacity: null,
-      cover_url: "",
+      cover_url: null,
     });
 
     expect(input).toMatchObject({
@@ -55,12 +55,12 @@ describe("activity/mappers", () => {
   it("преобразует форму обновления в payload для API", () => {
     const input = mapUpdateActivityFormToInput({
       title: "Activity",
-      description: "",
+      description: null,
       city: "Москва",
-      location_text: "",
+      location_text: null,
       starts_at: "2026-05-30T12:30",
       capacity: null,
-      cover_url: "",
+      cover_url: null,
       status: "cancelled",
     });
 

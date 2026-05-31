@@ -11,7 +11,7 @@ import type { UpdateActivityInput } from "./types";
 export const activityKeys = {
   all: ["activities"] as const,
   slug: (slug: string) => ["activities", "slug", slug] as const,
-  edit: (token: string) => ["activities", "edit", token] as const,
+  edit: (editToken: string) => ["activities", "edit", editToken] as const,
 };
 
 export function useActivities() {
@@ -24,25 +24,31 @@ export function useActivityBySlug(slug?: string) {
     enabled: Boolean(slug),
   });
 }
-export function useActivityByEditToken(token?: string) {
+export function useActivityByEditToken(editToken?: string) {
   return useQuery({
-    queryKey: activityKeys.edit(token ?? ""),
-    queryFn: () => getActivityByEditToken(token ?? ""),
-    enabled: Boolean(token),
+    queryKey: activityKeys.edit(editToken ?? ""),
+    queryFn: () => getActivityByEditToken(editToken ?? ""),
+    enabled: Boolean(editToken),
   });
 }
 export function useCreateActivity() {
-  const qc = useQueryClient();
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: createActivity,
-    onSuccess: () => qc.invalidateQueries({ queryKey: activityKeys.all }),
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: activityKeys.all }),
   });
 }
 export function useUpdateActivity() {
-  const qc = useQueryClient();
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({ id, input }: { id: string; input: UpdateActivityInput }) =>
       updateActivity(id, input),
-    onSuccess: () => qc.invalidateQueries({ queryKey: activityKeys.all }),
+    onSuccess: (activity) => {
+      queryClient.invalidateQueries({ queryKey: activityKeys.all });
+      queryClient.invalidateQueries({
+        queryKey: activityKeys.edit(activity.edit_token),
+      });
+    },
   });
 }
