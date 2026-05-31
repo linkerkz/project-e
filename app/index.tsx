@@ -9,7 +9,7 @@ export default function HomePage() {
   const activities = useActivities();
   return (
     <Page>
-      <Text className="text-4xl font-bold">Венти</Text>
+      <Text className="text-4xl font-bold">Venty</Text>
       <Text>Уродливые ссылки на активности, чтобы делать что-то с людьми</Text>
       <TextLink href="/create">[Создать активность]</TextLink>
       <Text className="text-2xl font-bold">Последние активности:</Text>

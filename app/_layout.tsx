@@ -10,7 +10,7 @@ export default function RootLayout() {
   return (
     <QueryClientProvider client={client}>
       <View className="border-b border-gray-500 p-4">
-        <Text className="text-3xl font-bold">Венти</Text>
+        <Text className="text-3xl font-bold">Venty</Text>
         <View className="flex-row gap-4">
           <TextLink href="/">Главная</TextLink>
           <TextLink href="/create">Создать</TextLink>
