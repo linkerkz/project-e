@@ -11,9 +11,14 @@ export function useRespondedFlag(activityId?: string) {
   useEffect(() => {
     if (activityId == null) return;
     let active = true;
-    readDeviceFlag(respondedKey(activityId)).then((responded) => {
-      if (active) setHasResponded(responded);
-    });
+    readDeviceFlag(respondedKey(activityId))
+      .then((responded) => {
+        if (active) setHasResponded(responded);
+      })
+      // Флаг не критичен: ошибка чтения = считаем, что отклика не было.
+      .catch(() => {
+        if (active) setHasResponded(false);
+      });
     return () => {
       active = false;
     };
@@ -21,8 +26,11 @@ export function useRespondedFlag(activityId?: string) {
 
   async function markResponded() {
     if (activityId == null) return;
-    await writeDeviceFlag(respondedKey(activityId));
     setHasResponded(true);
+    // Сбой записи не должен ронять успешный отклик: флаг переживёт только сессию.
+    try {
+      await writeDeviceFlag(respondedKey(activityId));
+    } catch {}
   }
 
   return { hasResponded, markResponded };

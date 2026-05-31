@@ -54,12 +54,14 @@ export function useManageActivityForm() {
   async function toggleStatus() {
     if (!activity) return;
 
-    const next = getNextActivityStatus(activity.status);
+    const previous = activity.status;
+    const next = getNextActivityStatus(previous);
     form.setValue("status", next);
     try {
       form.clearErrors("root.server");
       await mutation.mutateAsync({ id: activity.id, input: { status: next } });
     } catch (error) {
+      form.setValue("status", previous);
       setFormServerError(
         form.setError,
         "Не удалось изменить статус активности",

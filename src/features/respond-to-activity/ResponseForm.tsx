@@ -56,6 +56,7 @@ export function ResponseForm({ form, isSaving, onSubmit }: Props) {
       <Button
         title={isSaving ? "Сохраняем..." : "Отправить отклик"}
         onPress={handleSubmit(onSubmit)}
+        disabled={isSaving}
       />
       <ErrorText>{errors.root?.server?.message}</ErrorText>
     </View>
