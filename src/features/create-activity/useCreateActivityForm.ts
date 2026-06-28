@@ -12,23 +12,36 @@ import {
   createActivitySchema,
 } from "../../entities/activity/schemas";
 import type { Activity } from "../../entities/activity/types";
+import { useProfile } from "../../entities/profile/hooks";
 import { setFormServerError } from "../../shared/lib/setFormServerError";
+
+const emptyForm: CreateActivityFormInput = {
+  title: "",
+  description: "",
+  city: "",
+  location_text: "",
+  starts_at: "",
+  capacity: null,
+  cover_url: "",
+  chat_url: "",
+};
 
 export function useCreateActivityForm() {
   const router = useRouter();
   const mutation = useCreateActivity();
   const track = useTrackMyActivity();
+  const { data: profile } = useProfile();
+  // Тир 1: чат у организатора обычно один на все встречи — дефолтим ссылку
+  // из Telegram профиля. Профиль грузится асинхронно, поэтому через `values`;
+  // keepDirtyValues не затирает то, что организатор уже ввёл вручную.
+  const prefill = profile
+    ? { ...emptyForm, chat_url: profile.socials.telegram ?? "" }
+    : undefined;
   const form = useForm<CreateActivityFormInput, unknown, CreateActivityForm>({
     resolver: zodResolver(createActivitySchema),
-    defaultValues: {
-      title: "",
-      description: "",
-      city: "",
-      location_text: "",
-      starts_at: "",
-      capacity: null,
-      cover_url: "",
-    },
+    defaultValues: emptyForm,
+    values: prefill,
+    resetOptions: { keepDirtyValues: true },
   });
 
   async function submit(values: CreateActivityForm) {
