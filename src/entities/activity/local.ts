@@ -35,3 +35,21 @@ function toMyActivity(activity: Activity): MyActivity {
     startsAt: activity.starts_at,
   };
 }
+
+// Локальный список лайкнутых активностей по slug. Счётчик лайков на MVP не
+// показываем (нет серверной агрегации) — храним только состояние «лайкнуто/нет».
+const likedSlugsKey = "venty.liked-slugs";
+
+export async function readLikedSlugs(): Promise<string[]> {
+  const list = await readDeviceJson<string[]>(likedSlugsKey);
+  return list ?? [];
+}
+
+export async function toggleLike(slug: string): Promise<string[]> {
+  const list = await readLikedSlugs();
+  const next = list.includes(slug)
+    ? list.filter((item) => item !== slug)
+    : [slug, ...list];
+  await writeDeviceJson(likedSlugsKey, next);
+  return next;
+}
