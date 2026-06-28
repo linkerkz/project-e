@@ -7,7 +7,6 @@ describe("participant/schemas", () => {
 
     expect(result.status).toBe("going");
     expect(result.telegram).toBeUndefined();
-    expect(result.comment).toBeUndefined();
   });
 
   it("требует непустое имя", () => {

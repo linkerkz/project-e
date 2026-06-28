@@ -4,7 +4,6 @@ import type { ParticipantForm } from "../../entities/participant/schemas";
 import { Button } from "../../shared/ui/Button";
 import { ErrorText } from "../../shared/ui/ErrorText";
 import { FormField } from "../../shared/ui/FormField";
-import { Textarea } from "../../shared/ui/Textarea";
 
 type Props = {
   form: UseFormReturn<ParticipantForm>;
@@ -30,13 +29,6 @@ export function ResponseForm({ form, isSaving, onSubmit }: Props) {
         name="telegram"
         label="телеграм"
         error={errors.telegram?.message}
-      />
-      <FormField
-        control={control}
-        name="comment"
-        label="комментарий"
-        component={Textarea}
-        error={errors.comment?.message}
       />
       <Button
         title={isSaving ? "Сохраняем..." : "Отправить отклик"}

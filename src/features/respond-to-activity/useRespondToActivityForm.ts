@@ -21,7 +21,6 @@ const emptyResponse: ParticipantForm = {
   name: "",
   telegram: "",
   status: "going",
-  comment: "",
 };
 
 export function useRespondToActivityForm() {
