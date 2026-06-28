@@ -8,6 +8,7 @@ import { BackLink } from "../../src/shared/ui/BackLink";
 import { LoadingPage } from "../../src/shared/ui/LoadingPage";
 import { Page } from "../../src/shared/ui/Page";
 import { ParticipantList } from "../../src/shared/ui/ParticipantList";
+import { ShareButton } from "../../src/shared/ui/ShareButton";
 
 export default function ActivityPage() {
   const {
@@ -48,6 +49,7 @@ export default function ActivityPage() {
         Идут: {stats.going} Может быть: {stats.maybe} Не могут: {stats.cant}
       </Text>
       <CapacityNotice capacity={activity.capacity} going={stats.going} />
+      <ShareButton slug={activity.slug} title={activity.title} />
       {activity.status !== "cancelled" && !hasResponded ? (
         <ResponseForm form={form} isSaving={isSaving} onSubmit={submit} />
       ) : null}

@@ -7,6 +7,7 @@ import { BackLink } from "../../src/shared/ui/BackLink";
 import { LoadingPage } from "../../src/shared/ui/LoadingPage";
 import { Page } from "../../src/shared/ui/Page";
 import { ParticipantList } from "../../src/shared/ui/ParticipantList";
+import { ShareButton } from "../../src/shared/ui/ShareButton";
 
 export default function ManagePage() {
   const {
@@ -30,7 +31,7 @@ export default function ManagePage() {
       <BackLink />
       <Text className="text-2xl font-bold">Управление активностью</Text>
       <Text>Публичная ссылка: {publicUrl}</Text>
-      <Text>Копируй и отправляй вручную</Text>
+      <ShareButton slug={activity.slug} title={activity.title} />
       <ManageActivityForm
         form={form}
         status={activity.status}
