@@ -7,7 +7,7 @@ const capacity = z.preprocess(
   emptyToNull,
   z.coerce.number().int().positive().nullable(),
 );
-const coverUrl = z.preprocess(
+const optionalUrl = z.preprocess(
   emptyToNull,
   z.string().url("Введите корректную ссылку").nullable(),
 );
@@ -22,7 +22,8 @@ export const createActivitySchema = z.object({
     .min(1, "Дата обязательна")
     .refine(isValidActivityDateTime, "Введите корректные дату и время"),
   capacity,
-  cover_url: coverUrl,
+  cover_url: optionalUrl,
+  chat_url: optionalUrl,
 });
 
 export const updateActivitySchema = createActivitySchema.extend({

@@ -28,6 +28,7 @@ const activity: Activity = {
   starts_at: "2026-07-01T10:00:00Z",
   capacity: null,
   cover_url: null,
+  chat_url: null,
   edit_token: "token",
   status: "active",
   created_at: "",

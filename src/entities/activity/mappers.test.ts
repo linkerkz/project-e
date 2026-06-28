@@ -19,6 +19,7 @@ describe("activity/mappers", () => {
       starts_at: "2026-05-30T12:30",
       capacity: null,
       cover_url: null,
+      chat_url: null,
     });
 
     expect(input).toMatchObject({
@@ -44,6 +45,7 @@ describe("activity/mappers", () => {
       starts_at: "2026-05-30T12:30",
       capacity: 10,
       cover_url: "https://example.com/image.jpg",
+      chat_url: null,
     });
 
     expect(input.description).toBe("Описание");
@@ -61,6 +63,7 @@ describe("activity/mappers", () => {
       starts_at: "2026-05-30T12:30",
       capacity: null,
       cover_url: null,
+      chat_url: null,
       status: "cancelled",
     });
 
@@ -72,6 +75,7 @@ describe("activity/mappers", () => {
       starts_at: new Date("2026-05-30T12:30").toISOString(),
       capacity: null,
       cover_url: null,
+      chat_url: null,
       status: "cancelled",
     });
   });

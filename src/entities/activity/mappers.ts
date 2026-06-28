@@ -47,6 +47,7 @@ export function mapActivityToUpdateForm(
     starts_at: toDateTimeLocalInputValue(activity.starts_at),
     capacity: activity.capacity,
     cover_url: activity.cover_url ?? "",
+    chat_url: activity.chat_url ?? "",
     status: activity.status,
   };
 }
