@@ -1,4 +1,5 @@
 import { Image, Text } from "react-native";
+import { getCapacityState } from "../../src/entities/activity/utils";
 import { getParticipantStatusText } from "../../src/entities/participant/utils";
 import { ResponseForm } from "../../src/features/respond-to-activity/ResponseForm";
 import { useRespondToActivityForm } from "../../src/features/respond-to-activity/useRespondToActivityForm";
@@ -46,11 +47,7 @@ export default function ActivityPage() {
       <Text>
         Идут: {stats.going} Может быть: {stats.maybe} Не могут: {stats.cant}
       </Text>
-      {activity.capacity ? (
-        <Text>
-          {stats.going} / {activity.capacity} идут
-        </Text>
-      ) : null}
+      <CapacityNotice capacity={activity.capacity} going={stats.going} />
       {activity.status !== "cancelled" && !hasResponded ? (
         <ResponseForm form={form} isSaving={isSaving} onSubmit={submit} />
       ) : null}
@@ -66,4 +63,20 @@ export default function ActivityPage() {
       />
     </Page>
   );
+}
+
+type CapacityNoticeProps = {
+  capacity: number | null;
+  going: number;
+};
+
+function CapacityNotice({ capacity, going }: CapacityNoticeProps) {
+  const state = getCapacityState({ capacity, going });
+  if (state.kind === "unlimited") return null;
+
+  if (state.kind === "full") {
+    return <Text className="font-bold text-red-700">Мест нет</Text>;
+  }
+
+  return <Text>Осталось мест: {state.left}</Text>;
 }
