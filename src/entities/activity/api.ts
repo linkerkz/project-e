@@ -5,13 +5,23 @@ import type {
   UpdateActivityInput,
 } from "./types";
 
-export async function listActivities() {
+type Params = {
+  city?: string;
+  query?: string;
+};
+
+export async function listActivities(params: Params = {}) {
+  const { city, query } = params;
   const nowIso = new Date().toISOString();
-  const { data, error } = await requireSupabase()
+  let request = requireSupabase()
     .from("activities")
     .select("*")
     .eq("status", "active")
-    .gte("starts_at", nowIso)
+    .gte("starts_at", nowIso);
+  if (city) request = request.eq("city", city);
+  if (query) request = request.ilike("title", `%${query}%`);
+
+  const { data, error } = await request
     .order("starts_at", { ascending: true })
     .limit(50);
   if (error) throw error;

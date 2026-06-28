@@ -9,15 +9,24 @@ import {
 import { addMyActivity, readMyActivities } from "./local";
 import type { UpdateActivityInput } from "./types";
 
+type ActivitiesFilter = {
+  city?: string;
+  query?: string;
+};
+
 export const activityKeys = {
   all: ["activities"] as const,
+  list: (filter: ActivitiesFilter) => ["activities", "list", filter] as const,
   mine: ["activities", "mine"] as const,
   slug: (slug: string) => ["activities", "slug", slug] as const,
   edit: (editToken: string) => ["activities", "edit", editToken] as const,
 };
 
-export function useActivities() {
-  return useQuery({ queryKey: activityKeys.all, queryFn: listActivities });
+export function useActivities(filter: ActivitiesFilter = {}) {
+  return useQuery({
+    queryKey: activityKeys.list(filter),
+    queryFn: () => listActivities(filter),
+  });
 }
 export function useActivityBySlug(slug?: string) {
   return useQuery({
