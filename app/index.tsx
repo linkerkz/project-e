@@ -1,18 +1,34 @@
+import { useState } from "react";
 import { Text, View } from "react-native";
 import { useActivities } from "../src/entities/activity/hooks";
 import { ErrorText } from "../src/shared/ui/ErrorText";
+import { Input } from "../src/shared/ui/Input";
 import { LoadingText } from "../src/shared/ui/LoadingText";
 import { Page } from "../src/shared/ui/Page";
 import { TextLink } from "../src/shared/ui/TextLink";
 
 export default function HomePage() {
-  const activities = useActivities();
+  const [city, setCity] = useState("");
+  const [query, setQuery] = useState("");
+  const activities = useActivities({ city: city.trim(), query: query.trim() });
   return (
     <Page>
       <Text className="text-4xl font-bold">Venty</Text>
       <Text>Уродливые ссылки на активности, чтобы делать что-то с людьми</Text>
       <TextLink href="/create">[Создать активность]</TextLink>
-      <Text className="text-2xl font-bold">Последние активности:</Text>
+      <Input
+        label="Город"
+        value={city}
+        onChangeText={setCity}
+        placeholder="Например, Алматы"
+      />
+      <Input
+        label="Поиск по названию"
+        value={query}
+        onChangeText={setQuery}
+        placeholder="Что ищем?"
+      />
+      <Text className="text-2xl font-bold">Ближайшие активности:</Text>
       {activities.isLoading ? <LoadingText /> : null}
       <ErrorText
         error={activities.error}

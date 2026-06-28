@@ -6,7 +6,6 @@ type ParticipantRow = {
   name: string;
   status: string;
   telegram: string | null;
-  comment: string | null;
 };
 
 type Props = {
@@ -24,7 +23,7 @@ export function ParticipantList({ participants, loading, statusText }: Props) {
       {participants.map((participant) => (
         <Text key={participant.id}>
           - {participant.name} / {statusText(participant.status)} /{" "}
-          {participant.telegram || ""} / {participant.comment || ""}
+          {participant.telegram || ""}
         </Text>
       ))}
     </>

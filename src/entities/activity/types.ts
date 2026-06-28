@@ -10,6 +10,7 @@ export type Activity = {
   starts_at: string;
   capacity: number | null;
   cover_url: string | null;
+  chat_url: string | null;
   edit_token: string;
   status: ActivityStatus;
   created_at: string;
@@ -25,6 +26,7 @@ export type CreateActivityInput = {
   starts_at: string;
   capacity?: number | null;
   cover_url?: string | null;
+  chat_url?: string | null;
   edit_token: string;
   status: ActivityStatus;
 };

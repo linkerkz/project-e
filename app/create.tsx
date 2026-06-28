@@ -61,6 +61,12 @@ export default function CreatePage() {
         label="ссылка на обложку"
         error={errors.cover_url?.message}
       />
+      <FormField
+        control={control}
+        name="chat_url"
+        label="ссылка на чат"
+        error={errors.chat_url?.message}
+      />
       <Button
         title={isSaving ? "Сохраняем..." : "Создать"}
         onPress={handleSubmit(submit)}

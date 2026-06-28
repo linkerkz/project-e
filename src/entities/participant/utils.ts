@@ -6,10 +6,6 @@ export const participantStatusLabels: Record<ParticipantStatus, string> = {
   cant: "не могу",
 };
 
-export const participantStatusOptions = (
-  Object.keys(participantStatusLabels) as ParticipantStatus[]
-).map((value) => ({ value, label: participantStatusLabels[value] }));
-
 export function getParticipantStatusText(status: string) {
   return isParticipantStatus(status) ? participantStatusLabels[status] : status;
 }

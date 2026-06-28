@@ -1,12 +1,9 @@
-import { Controller, type UseFormReturn } from "react-hook-form";
+import type { UseFormReturn } from "react-hook-form";
 import { Text, View } from "react-native";
 import type { ParticipantForm } from "../../entities/participant/schemas";
-import { participantStatusOptions } from "../../entities/participant/utils";
 import { Button } from "../../shared/ui/Button";
 import { ErrorText } from "../../shared/ui/ErrorText";
 import { FormField } from "../../shared/ui/FormField";
-import { Select } from "../../shared/ui/Select";
-import { Textarea } from "../../shared/ui/Textarea";
 
 type Props = {
   form: UseFormReturn<ParticipantForm>;
@@ -32,26 +29,6 @@ export function ResponseForm({ form, isSaving, onSubmit }: Props) {
         name="telegram"
         label="телеграм"
         error={errors.telegram?.message}
-      />
-      <Controller
-        control={control}
-        name="status"
-        render={({ field }) => (
-          <Select
-            label="статус"
-            value={field.value}
-            onChange={field.onChange}
-            options={participantStatusOptions}
-            error={errors.status?.message}
-          />
-        )}
-      />
-      <FormField
-        control={control}
-        name="comment"
-        label="комментарий"
-        component={Textarea}
-        error={errors.comment?.message}
       />
       <Button
         title={isSaving ? "Сохраняем..." : "Отправить отклик"}
