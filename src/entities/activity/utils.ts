@@ -52,6 +52,26 @@ export function getNextActivityStatus(status: ActivityStatus): ActivityStatus {
   return status === "active" ? "cancelled" : "active";
 }
 
+type CapacityState =
+  | { kind: "unlimited" }
+  | { kind: "available"; left: number }
+  | { kind: "full" };
+
+type CapacityParams = {
+  capacity: number | null;
+  going: number;
+};
+
+export function getCapacityState({
+  capacity,
+  going,
+}: CapacityParams): CapacityState {
+  if (capacity == null) return { kind: "unlimited" };
+
+  const left = capacity - going;
+  return left > 0 ? { kind: "available", left } : { kind: "full" };
+}
+
 function parseDate(value: string) {
   const date = new Date(value.trim());
   return Number.isNaN(date.getTime()) ? null : date;

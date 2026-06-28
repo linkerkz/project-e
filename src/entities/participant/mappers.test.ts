@@ -24,14 +24,14 @@ describe("participant/mappers", () => {
       mapParticipantFormToInput("activity-1", {
         name: "Анна",
         telegram: "@anna",
-        status: "maybe",
+        status: "going",
         comment: "Буду позже",
       }),
     ).toEqual({
       activity_id: "activity-1",
       name: "Анна",
       telegram: "@anna",
-      status: "maybe",
+      status: "going",
       comment: "Буду позже",
     });
   });

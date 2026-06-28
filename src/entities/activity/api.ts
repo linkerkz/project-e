@@ -5,12 +5,24 @@ import type {
   UpdateActivityInput,
 } from "./types";
 
-export async function listActivities() {
-  const { data, error } = await requireSupabase()
+type Params = {
+  city?: string;
+  query?: string;
+};
+
+export async function listActivities(params: Params = {}) {
+  const { city, query } = params;
+  const nowIso = new Date().toISOString();
+  let request = requireSupabase()
     .from("activities")
     .select("*")
     .eq("status", "active")
-    .order("created_at", { ascending: false })
+    .gte("starts_at", nowIso);
+  if (city) request = request.eq("city", city);
+  if (query) request = request.ilike("title", `%${query}%`);
+
+  const { data, error } = await request
+    .order("starts_at", { ascending: true })
     .limit(50);
   if (error) throw error;
   return (data ?? []) as Activity[];

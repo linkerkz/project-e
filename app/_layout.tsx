@@ -14,6 +14,7 @@ export default function RootLayout() {
         <View className="flex-row gap-4">
           <TextLink href="/">Главная</TextLink>
           <TextLink href="/create">Создать</TextLink>
+          <TextLink href="/profile">Профиль</TextLink>
         </View>
       </View>
       <Stack screenOptions={{ headerShown: false }} />
