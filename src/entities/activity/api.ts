@@ -6,11 +6,13 @@ import type {
 } from "./types";
 
 export async function listActivities() {
+  const nowIso = new Date().toISOString();
   const { data, error } = await requireSupabase()
     .from("activities")
     .select("*")
     .eq("status", "active")
-    .order("created_at", { ascending: false })
+    .gte("starts_at", nowIso)
+    .order("starts_at", { ascending: true })
     .limit(50);
   if (error) throw error;
   return (data ?? []) as Activity[];
