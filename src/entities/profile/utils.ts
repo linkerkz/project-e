@@ -27,7 +27,13 @@ type SocialOption = {
 export const socialOptions: SocialOption[] = [
   { key: "telegram", label: "Telegram", placeholder: "@username или ссылка" },
   { key: "instagram", label: "Instagram", placeholder: "@username или ссылка" },
+  { key: "tiktok", label: "TikTok", placeholder: "@username или ссылка" },
   { key: "whatsapp", label: "WhatsApp", placeholder: "номер или ссылка" },
+  {
+    key: "discord",
+    label: "Discord",
+    placeholder: "ник или ссылка-приглашение",
+  },
   { key: "website", label: "Сайт", placeholder: "https://example.com" },
 ];
 

@@ -12,7 +12,9 @@ describe("profile/mappers", () => {
       socials: {
         telegram: null,
         instagram: null,
+        tiktok: null,
         whatsapp: null,
+        discord: null,
         website: null,
       },
       registeredAt: "2026-01-01T00:00:00.000Z",
@@ -26,7 +28,9 @@ describe("profile/mappers", () => {
       socials: {
         telegram: "",
         instagram: "",
+        tiktok: "",
         whatsapp: "",
+        discord: "",
         website: "",
       },
     });
@@ -41,7 +45,9 @@ describe("profile/mappers", () => {
       socials: {
         telegram: "@anna",
         instagram: null,
+        tiktok: null,
         whatsapp: null,
+        discord: null,
         website: null,
       },
       registeredAt: "2026-01-01T00:00:00.000Z",

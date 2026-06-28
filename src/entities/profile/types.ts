@@ -13,4 +13,10 @@ export type SaveProfileInput = Omit<Profile, "registeredAt">;
 
 export type ProfileSocials = Record<SocialNetwork, string | null>;
 
-export type SocialNetwork = "telegram" | "instagram" | "whatsapp" | "website";
+export type SocialNetwork =
+  | "telegram"
+  | "instagram"
+  | "tiktok"
+  | "whatsapp"
+  | "discord"
+  | "website";

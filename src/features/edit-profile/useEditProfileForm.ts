@@ -15,7 +15,14 @@ const emptyProfile: ProfileFormInput = {
   city: "",
   categories: [],
   photoUrl: "",
-  socials: { telegram: "", instagram: "", whatsapp: "", website: "" },
+  socials: {
+    telegram: "",
+    instagram: "",
+    tiktok: "",
+    whatsapp: "",
+    discord: "",
+    website: "",
+  },
 };
 
 export function useEditProfileForm() {

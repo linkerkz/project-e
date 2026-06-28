@@ -4,7 +4,9 @@ import { profileSchema } from "./schemas";
 const emptySocials = {
   telegram: "",
   instagram: "",
+  tiktok: "",
   whatsapp: "",
+  discord: "",
   website: "",
 };
 
@@ -25,7 +27,9 @@ describe("profile/schemas", () => {
       socials: {
         telegram: null,
         instagram: null,
+        tiktok: null,
         whatsapp: null,
+        discord: null,
         website: null,
       },
     });

@@ -6,7 +6,9 @@ const optionalText = z.preprocess(emptyToNull, z.string().nullable());
 const socialsSchema = z.object({
   telegram: optionalText,
   instagram: optionalText,
+  tiktok: optionalText,
   whatsapp: optionalText,
+  discord: optionalText,
   website: optionalText,
 });
 

@@ -17,7 +17,9 @@ function mapSocialsToForm(socials: ProfileSocials) {
   return {
     telegram: socials.telegram ?? "",
     instagram: socials.instagram ?? "",
+    tiktok: socials.tiktok ?? "",
     whatsapp: socials.whatsapp ?? "",
+    discord: socials.discord ?? "",
     website: socials.website ?? "",
   };
 }

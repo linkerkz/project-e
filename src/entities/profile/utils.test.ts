@@ -8,7 +8,9 @@ describe("profile/utils", () => {
       website: "https://anna.dev",
       telegram: "@anna",
       instagram: null,
+      tiktok: null,
       whatsapp: null,
+      discord: null,
     };
 
     expect(getFilledSocials(socials)).toEqual([
