@@ -45,9 +45,7 @@ export default function ActivityPage() {
       {activity.status === "cancelled" ? (
         <Text className="font-bold text-red-700">ОТМЕНЕНО</Text>
       ) : null}
-      <Text>
-        Идут: {stats.going} Может быть: {stats.maybe} Не могут: {stats.cant}
-      </Text>
+      <Text>Идут: {stats.going}</Text>
       <CapacityNotice capacity={activity.capacity} going={stats.going} />
       <ShareButton slug={activity.slug} title={activity.title} />
       {activity.status !== "cancelled" && !hasResponded ? (
