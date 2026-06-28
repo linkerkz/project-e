@@ -7,6 +7,7 @@ vi.mock("expo-crypto", () => ({
 import {
   generateActivitySlug,
   generateEditToken,
+  getCapacityState,
   getNextActivityStatus,
   isValidActivityDateTime,
   slugifyTitle,
@@ -59,5 +60,18 @@ describe("activity/utils", () => {
   it("возвращает следующий статус активности", () => {
     expect(getNextActivityStatus("active")).toBe("cancelled");
     expect(getNextActivityStatus("cancelled")).toBe("active");
+  });
+
+  it("считает остаток мест из capacity", () => {
+    expect(getCapacityState({ capacity: null, going: 3 })).toEqual({
+      kind: "unlimited",
+    });
+    expect(getCapacityState({ capacity: 10, going: 4 })).toEqual({
+      kind: "available",
+      left: 6,
+    });
+    expect(getCapacityState({ capacity: 5, going: 5 })).toEqual({
+      kind: "full",
+    });
   });
 });
