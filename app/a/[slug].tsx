@@ -7,6 +7,7 @@ import { useRespondToActivityForm } from "../../src/features/respond-to-activity
 import { ActivityNotFound } from "../../src/shared/ui/ActivityNotFound";
 import { BackLink } from "../../src/shared/ui/BackLink";
 import { Button } from "../../src/shared/ui/Button";
+import { ChatLinkButton } from "../../src/shared/ui/ChatLinkButton";
 import { LoadingPage } from "../../src/shared/ui/LoadingPage";
 import { Page } from "../../src/shared/ui/Page";
 import { ParticipantList } from "../../src/shared/ui/ParticipantList";
@@ -51,6 +52,7 @@ export default function ActivityPage() {
       <CapacityNotice capacity={activity.capacity} going={stats.going} />
       <LikeButton slug={activity.slug} />
       <ShareButton slug={activity.slug} title={activity.title} />
+      {activity.chat_url ? <ChatLinkButton url={activity.chat_url} /> : null}
       {activity.status !== "cancelled" && !hasResponded ? (
         <ResponseForm form={form} isSaving={isSaving} onSubmit={submit} />
       ) : null}
