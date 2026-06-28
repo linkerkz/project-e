@@ -12,6 +12,7 @@ import {
   createActivitySchema,
 } from "../../entities/activity/schemas";
 import type { Activity } from "../../entities/activity/types";
+import { telegramToChatUrl } from "../../entities/activity/utils";
 import { useProfile } from "../../entities/profile/hooks";
 import { setFormServerError } from "../../shared/lib/setFormServerError";
 
@@ -35,7 +36,7 @@ export function useCreateActivityForm() {
   // из Telegram профиля. Профиль грузится асинхронно, поэтому через `values`;
   // keepDirtyValues не затирает то, что организатор уже ввёл вручную.
   const prefill = profile
-    ? { ...emptyForm, chat_url: profile.socials.telegram ?? "" }
+    ? { ...emptyForm, chat_url: telegramToChatUrl(profile.socials.telegram) }
     : undefined;
   const form = useForm<CreateActivityFormInput, unknown, CreateActivityForm>({
     resolver: zodResolver(createActivitySchema),

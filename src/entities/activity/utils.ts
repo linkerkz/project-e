@@ -72,6 +72,18 @@ export function getCapacityState({
   return left > 0 ? { kind: "available", left } : { kind: "full" };
 }
 
+// Telegram в профиле хранится как `@username` / `username` / ссылка, а chat_url
+// требует полный URL — нормализуем хэндл в t.me-ссылку для префилла формы.
+export function telegramToChatUrl(value: string | null | undefined) {
+  const handle = value?.trim();
+  if (!handle) return "";
+  if (/^https?:\/\//i.test(handle)) return handle;
+  if (/^(t\.me|telegram\.me|telegram\.dog)\//i.test(handle)) {
+    return `https://${handle}`;
+  }
+  return `https://t.me/${handle.replace(/^@/, "")}`;
+}
+
 function parseDate(value: string) {
   const date = new Date(value.trim());
   return Number.isNaN(date.getTime()) ? null : date;

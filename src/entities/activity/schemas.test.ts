@@ -14,6 +14,7 @@ const validForm = {
   starts_at: "2026-07-01T10:00",
   capacity: "",
   cover_url: "",
+  chat_url: "",
 };
 
 describe("activity/schemas", () => {
@@ -24,6 +25,7 @@ describe("activity/schemas", () => {
     expect(result.location_text).toBeNull();
     expect(result.capacity).toBeNull();
     expect(result.cover_url).toBeNull();
+    expect(result.chat_url).toBeNull();
   });
 
   it("приводит capacity к положительному числу", () => {
@@ -47,6 +49,24 @@ describe("activity/schemas", () => {
     const bad = { ...validForm, cover_url: "не-ссылка" };
 
     expect(createActivitySchema.safeParse(bad).success).toBe(false);
+  });
+
+  it("отклоняет некорректную ссылку на чат", () => {
+    const bad = { ...validForm, chat_url: "не-ссылка" };
+
+    expect(createActivitySchema.safeParse(bad).success).toBe(false);
+  });
+
+  it("отклоняет ссылку на чат вне списка мессенджеров", () => {
+    const bad = { ...validForm, chat_url: "https://example.com/chat" };
+
+    expect(createActivitySchema.safeParse(bad).success).toBe(false);
+  });
+
+  it("принимает ссылку на известный мессенджер", () => {
+    const ok = { ...validForm, chat_url: "https://t.me/club" };
+
+    expect(createActivitySchema.safeParse(ok).success).toBe(true);
   });
 
   it("в форме обновления добавляет статус", () => {

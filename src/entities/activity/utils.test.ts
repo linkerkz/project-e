@@ -11,6 +11,7 @@ import {
   getNextActivityStatus,
   isValidActivityDateTime,
   slugifyTitle,
+  telegramToChatUrl,
   toDateTimeLocalInputValue,
   toIsoDate,
 } from "./utils";
@@ -30,6 +31,15 @@ describe("activity/utils", () => {
 
   it("генерирует edit token из UUID без дефисов", () => {
     expect(generateEditToken()).toMatch(/^[a-f0-9]{32}$/);
+  });
+
+  it("нормализует Telegram-хэндл в t.me ссылку", () => {
+    expect(telegramToChatUrl("@anna")).toBe("https://t.me/anna");
+    expect(telegramToChatUrl("anna")).toBe("https://t.me/anna");
+    expect(telegramToChatUrl("t.me/anna")).toBe("https://t.me/anna");
+    expect(telegramToChatUrl("https://t.me/anna")).toBe("https://t.me/anna");
+    expect(telegramToChatUrl("")).toBe("");
+    expect(telegramToChatUrl(null)).toBe("");
   });
 
   it("проверяет корректность даты", () => {
