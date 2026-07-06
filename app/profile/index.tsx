@@ -8,6 +8,8 @@ import {
   formatRegisteredAt,
   getFilledSocials,
 } from "../../src/entities/profile/utils";
+import { useMyMemberships, useMySeries } from "../../src/entities/series/hooks";
+import type { Membership, MySeries } from "../../src/entities/series/local";
 import { Avatar } from "../../src/shared/ui/Avatar";
 import { BackLink } from "../../src/shared/ui/BackLink";
 import { Button } from "../../src/shared/ui/Button";
@@ -19,6 +21,8 @@ export default function ProfilePage() {
   const profileQuery = useProfile();
   const myActivities = useMyActivities();
   const myResponses = useMyResponses();
+  const mySeries = useMySeries();
+  const myMemberships = useMyMemberships();
   const reset = useResetProfile();
 
   if (profileQuery.isLoading) return <LoadingPage />;
@@ -35,6 +39,8 @@ export default function ProfilePage() {
       />
       <Socials profile={profile} />
       <MyActivities items={myActivities.data ?? []} />
+      <MySeriesList items={mySeries.data ?? []} />
+      <AttendedSeries items={myMemberships.data ?? []} />
       <TextLink href="/profile/edit">[Редактировать профиль]</TextLink>
       <Button title="Выйти" onPress={() => reset.mutate()} />
     </Page>
@@ -109,6 +115,42 @@ function MyActivities({ items }: { items: MyActivity[] }) {
             <TextLink href={`/a/${item.slug}`}>страница</TextLink>
             <TextLink href={`/manage/${item.editToken}`}>управление</TextLink>
           </View>
+        </View>
+      ))}
+    </View>
+  );
+}
+
+function MySeriesList({ items }: { items: MySeries[] }) {
+  return (
+    <View className="gap-2">
+      <Text className="text-xl font-bold">Мои серии</Text>
+      {items.length === 0 ? <Text>Пока ничего не создано.</Text> : null}
+      {items.map((item) => (
+        <View key={item.slug} className="border-b border-gray-300 py-2">
+          <Text>
+            {item.title} — {item.city}
+          </Text>
+          <View className="flex-row gap-4">
+            <TextLink href={`/s/${item.slug}`}>страница</TextLink>
+            <TextLink href={`/manage/series/${item.editToken}`}>
+              управление
+            </TextLink>
+          </View>
+        </View>
+      ))}
+    </View>
+  );
+}
+
+function AttendedSeries({ items }: { items: Membership[] }) {
+  return (
+    <View className="gap-2">
+      <Text className="text-xl font-bold">Хожу постоянно</Text>
+      {items.length === 0 ? <Text>Пока никуда не записан.</Text> : null}
+      {items.map((item) => (
+        <View key={item.seriesSlug} className="border-b border-gray-300 py-2">
+          <TextLink href={`/s/${item.seriesSlug}`}>{item.seriesSlug}</TextLink>
         </View>
       ))}
     </View>

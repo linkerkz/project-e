@@ -1,6 +1,6 @@
 import { Platform, Share } from "react-native";
 import { getRussianErrorMessage } from "../errors/getRussianErrorMessage";
-import { buildActivityPublicUrl } from "./buildActivityPublicUrl";
+import { buildActivityPublicUrl } from "./publicUrl";
 
 // Результат шеринга для UI: открыли системный лист, скопировали в буфер
 // (веб-фолбэк) или ошибка с уже русским сообщением.

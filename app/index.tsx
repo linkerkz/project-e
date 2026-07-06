@@ -1,21 +1,31 @@
 import { useState } from "react";
 import { Text, View } from "react-native";
 import { useActivities } from "../src/entities/activity/hooks";
+import type { Activity } from "../src/entities/activity/types";
+import { useSeries } from "../src/entities/series/hooks";
+import type { SeriesWithMeetings } from "../src/entities/series/types";
+import { formatRecurrenceText } from "../src/entities/series/utils";
 import { ErrorText } from "../src/shared/ui/ErrorText";
 import { Input } from "../src/shared/ui/Input";
 import { LoadingText } from "../src/shared/ui/LoadingText";
 import { Page } from "../src/shared/ui/Page";
 import { TextLink } from "../src/shared/ui/TextLink";
 
+type FeedItem = { key: string; date: number; node: React.ReactNode };
+
 export default function HomePage() {
   const [city, setCity] = useState("");
   const [query, setQuery] = useState("");
   const activities = useActivities({ city: city.trim(), query: query.trim() });
+  const series = useSeries();
+  const items = buildFeed(activities.data ?? [], series.data ?? []);
+  const isLoading = activities.isLoading || series.isLoading;
+
   return (
     <Page>
       <Text className="text-4xl font-bold">Venty</Text>
-      <Text>Уродливые ссылки на активности, чтобы делать что-то с людьми</Text>
-      <TextLink href="/create">[Создать активность]</TextLink>
+      <Text>Уродливые ссылки на мероприятия, чтобы делать что-то с людьми</Text>
+      <TextLink href="/create">[Создать мероприятие]</TextLink>
       <Input
         label="Город"
         value={city}
@@ -28,26 +38,79 @@ export default function HomePage() {
         onChangeText={setQuery}
         placeholder="Что ищем?"
       />
-      <Text className="text-2xl font-bold">Ближайшие активности:</Text>
-      {activities.isLoading ? <LoadingText /> : null}
+      <Text className="text-2xl font-bold">Ближайшие мероприятия:</Text>
+      {isLoading ? <LoadingText /> : null}
       <ErrorText
-        error={activities.error}
-        fallback="Не удалось загрузить активности"
+        error={activities.error ?? series.error}
+        fallback="Не удалось загрузить ленту"
       />
-      {activities.data?.length === 0 ? (
-        <Text>Активностей пока нет.</Text>
+      {!isLoading && items.length === 0 ? (
+        <Text>Мероприятий пока нет.</Text>
       ) : null}
-      <View className="gap-2">
-        {activities.data?.map((activity) => (
-          <View key={activity.id} className="border-b border-gray-300 py-2">
-            <Text>
-              {activity.title} — {activity.city} —{" "}
-              {new Date(activity.starts_at).toLocaleString()}
-            </Text>
-            <TextLink href={`/a/${activity.slug}`}>открыть</TextLink>
-          </View>
-        ))}
-      </View>
+      <View className="gap-2">{items.map((item) => item.node)}</View>
     </Page>
   );
+}
+
+// Активности и серии в одной ленте по возрастанию даты ближайшей встречи.
+function buildFeed(
+  activities: Activity[],
+  series: SeriesWithMeetings[],
+): FeedItem[] {
+  const activityItems = activities.map(toActivityItem);
+  const seriesItems = series.map(toSeriesItem);
+  return [...activityItems, ...seriesItems].sort((a, b) => a.date - b.date);
+}
+
+function toActivityItem(activity: Activity): FeedItem {
+  const startsAt = new Date(activity.starts_at);
+  return {
+    key: `activity-${activity.id}`,
+    date: startsAt.getTime(),
+    node: (
+      <View
+        key={`activity-${activity.id}`}
+        className="border-b border-gray-300 py-2"
+      >
+        <Text>
+          {activity.title} — {activity.city} — {startsAt.toLocaleString()}
+        </Text>
+        <TextLink href={`/a/${activity.slug}`}>открыть</TextLink>
+      </View>
+    ),
+  };
+}
+
+function toSeriesItem(series: SeriesWithMeetings): FeedItem {
+  const next = nextMeetingDate(series);
+  return {
+    key: `series-${series.id}`,
+    date: next.getTime(),
+    node: (
+      <View
+        key={`series-${series.id}`}
+        className="border-b border-gray-300 py-2"
+      >
+        <Text>
+          {series.title} — {series.city} · серия
+        </Text>
+        <Text className="text-gray-600">
+          {formatRecurrenceText(series.recurrence, series.starts_at)} ·
+          ближайшая: {next.toLocaleString()}
+        </Text>
+        <TextLink href={`/s/${series.slug}`}>открыть</TextLink>
+      </View>
+    ),
+  };
+}
+
+// Ближайшая активная встреча в будущем; если слотов ещё нет — старт серии.
+function nextMeetingDate(series: SeriesWithMeetings): Date {
+  const now = Date.now();
+  const upcoming = series.meetings
+    .filter((meeting) => meeting.status === "active")
+    .map((meeting) => new Date(meeting.starts_at))
+    .filter((date) => date.getTime() >= now)
+    .sort((a, b) => a.getTime() - b.getTime());
+  return upcoming[0] ?? new Date(series.starts_at);
 }
