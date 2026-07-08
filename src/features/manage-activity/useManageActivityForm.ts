@@ -16,7 +16,7 @@ import {
 } from "../../entities/activity/schemas";
 import { getNextActivityStatus } from "../../entities/activity/utils";
 import { useParticipants } from "../../entities/participant/hooks";
-import { buildActivityPublicUrl } from "../../shared/lib/buildActivityPublicUrl";
+import { buildActivityPublicUrl } from "../../shared/lib/publicUrl";
 import { setFormServerError } from "../../shared/lib/setFormServerError";
 
 export function useManageActivityForm() {

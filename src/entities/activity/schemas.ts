@@ -1,16 +1,11 @@
 import { z } from "zod";
-import { isValidActivityDateTime } from "./utils";
-
-const emptyToNull = (v: unknown) => (v === "" || v === undefined ? null : v);
-const optionalText = z.preprocess(emptyToNull, z.string().nullable());
-const capacity = z.preprocess(
-  emptyToNull,
-  z.coerce.number().int().positive().nullable(),
-);
-const coverUrl = z.preprocess(
-  emptyToNull,
-  z.string().url("Введите корректную ссылку").nullable(),
-);
+import { isValidDateTime } from "../../shared/lib/datetime";
+import {
+  capacity,
+  chatUrl,
+  optionalText,
+  optionalUrl,
+} from "../../shared/lib/zodFields";
 
 export const createActivitySchema = z.object({
   title: z.string().trim().min(1, "Название обязательно"),
@@ -20,9 +15,10 @@ export const createActivitySchema = z.object({
   starts_at: z
     .string()
     .min(1, "Дата обязательна")
-    .refine(isValidActivityDateTime, "Введите корректные дату и время"),
+    .refine(isValidDateTime, "Введите корректные дату и время"),
   capacity,
-  cover_url: coverUrl,
+  cover_url: optionalUrl,
+  chat_url: chatUrl,
 });
 
 export const updateActivitySchema = createActivitySchema.extend({

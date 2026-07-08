@@ -9,6 +9,5 @@ export function mapParticipantFormToInput(
     activity_id: activityId,
     ...form,
     telegram: form.telegram || null,
-    comment: form.comment || null,
   };
 }

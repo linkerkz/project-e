@@ -2,9 +2,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useLocalSearchParams } from "expo-router";
 import { useForm } from "react-hook-form";
 import { useActivityBySlug } from "../../entities/activity/hooks";
+import type { Activity } from "../../entities/activity/types";
 import {
   useCreateParticipant,
   useParticipants,
+  useTrackMyResponse,
 } from "../../entities/participant/hooks";
 import { mapParticipantFormToInput } from "../../entities/participant/mappers";
 import {
@@ -19,7 +21,6 @@ const emptyResponse: ParticipantForm = {
   name: "",
   telegram: "",
   status: "going",
-  comment: "",
 };
 
 export function useRespondToActivityForm() {
@@ -28,6 +29,7 @@ export function useRespondToActivityForm() {
   const activity = activityQuery.data;
   const participantsQuery = useParticipants(activity?.id);
   const mutation = useCreateParticipant();
+  const track = useTrackMyResponse();
   const form = useForm<ParticipantForm>({
     resolver: zodResolver(participantSchema),
     defaultValues: emptyResponse,
@@ -48,9 +50,27 @@ export function useRespondToActivityForm() {
       );
       form.reset(emptyResponse);
       await markResponded();
+      await rememberResponse(activity, values.status);
     } catch (error) {
       setFormServerError(form.setError, "Не удалось отправить отклик", error);
     }
+  }
+
+  // Локальный список «Посещено» не критичен: сбой записи не должен ронять
+  // успешный отклик.
+  async function rememberResponse(
+    activity: Activity,
+    status: ParticipantForm["status"],
+  ) {
+    try {
+      await track.mutateAsync({
+        slug: activity.slug,
+        title: activity.title,
+        city: activity.city,
+        startsAt: activity.starts_at,
+        status,
+      });
+    } catch {}
   }
 
   return {
