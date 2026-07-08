@@ -21,7 +21,8 @@ const recurrenceEnd = z.discriminatedUnion("kind", [
     count: z.coerce
       .number()
       .int()
-      .positive("Число встреч должно быть больше нуля"),
+      .positive("Число встреч должно быть больше нуля")
+      .max(200, "Слишком много встреч"),
   }),
 ]);
 

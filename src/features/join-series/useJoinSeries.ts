@@ -41,9 +41,11 @@ export function useJoinSeries(series?: Series) {
         mapJoinFormToMemberInput(series.id, values),
       );
       const next = { seriesSlug: series.slug, memberId: member.id };
-      await addMembership(next);
       setMembership(next);
       form.reset(emptyForm);
+      // Запись на сервере уже прошла — сбой device-local хранилища не показываем
+      // как ошибку записи, иначе ретрай создаст дубль участника.
+      await addMembership(next).catch(() => {});
     } catch (error) {
       setFormServerError(form.setError, "Не удалось записаться в серию", error);
     }
@@ -52,9 +54,14 @@ export function useJoinSeries(series?: Series) {
   async function leave() {
     if (!membership) return;
 
-    await leaveMutation.mutateAsync(membership.memberId);
-    await removeMembership(membership.seriesSlug);
-    setMembership(null);
+    try {
+      form.clearErrors("root.server");
+      await leaveMutation.mutateAsync(membership.memberId);
+      await removeMembership(membership.seriesSlug);
+      setMembership(null);
+    } catch (error) {
+      setFormServerError(form.setError, "Не удалось выйти из серии", error);
+    }
   }
 
   return {

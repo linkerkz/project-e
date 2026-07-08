@@ -18,9 +18,14 @@ import {
 import { addMySeries, readMemberships, readMySeries } from "./local";
 import type { Series, UpdateSeriesInput } from "./types";
 
+type SeriesFilter = {
+  city?: string;
+  query?: string;
+};
+
 export const seriesKeys = {
   all: ["series"] as const,
-  list: ["series", "list"] as const,
+  list: (filter: SeriesFilter) => ["series", "list", filter] as const,
   mine: ["series", "mine"] as const,
   memberships: ["series", "memberships"] as const,
   slug: (slug: string) => ["series", "slug", slug] as const,
@@ -30,8 +35,11 @@ export const seriesKeys = {
   marks: (meetingIds: string[]) => ["series", "marks", meetingIds] as const,
 };
 
-export function useSeries() {
-  return useQuery({ queryKey: seriesKeys.list, queryFn: listSeries });
+export function useSeries(filter: SeriesFilter = {}) {
+  return useQuery({
+    queryKey: seriesKeys.list(filter),
+    queryFn: () => listSeries(filter),
+  });
 }
 export function useSeriesBySlug(slug?: string) {
   return useQuery({

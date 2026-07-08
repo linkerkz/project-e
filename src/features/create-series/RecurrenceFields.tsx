@@ -130,7 +130,7 @@ function EndEditor({ value, onChange, dateError, countError }: EndEditorProps) {
           label="число встреч"
           value={String(value.count)}
           onChangeText={(count) =>
-            onChange({ kind: "count", count: Number(count) })
+            onChange({ kind: "count", count: Number(count) || 0 })
           }
           error={countError}
         />
@@ -173,11 +173,18 @@ function defaultEnd(kind: RecurrenceEnd["kind"]): RecurrenceEnd {
 // к доменному правилу, чтобы посчитать превью дат.
 function toRecurrence(draft: RecurrenceDraft): Recurrence {
   return {
-    interval: Number(draft.interval) || 1,
+    interval: positiveInterval(draft.interval),
     unit: draft.unit,
     weekdays: draft.weekdays ?? [],
     end: toEnd(draft.end),
   };
+}
+
+// Нецифру, ноль и отрицательные значения превью считает шагом в 1, чтобы не
+// рисовать вырожденное расписание (реальную валидацию делает схема на сабмите).
+function positiveInterval(value: RecurrenceDraft["interval"]): number {
+  const parsed = Math.trunc(Number(value));
+  return parsed >= 1 ? parsed : 1;
 }
 
 function toEnd(end: EndDraft): RecurrenceEnd {

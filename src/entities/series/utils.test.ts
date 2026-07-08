@@ -17,7 +17,7 @@ const ourWeekday = (iso: string) => (new Date(iso).getDay() + 6) % 7;
 const spacing = (dates: string[], i: number) =>
   new Date(dates[i + 1]).getTime() - new Date(dates[i]).getTime();
 
-describe("series/utils listOccurrences", () => {
+describe("series/utils генерация слотов", () => {
   it("ежедневное правило даёт подряд идущие дни", () => {
     const dates = listOccurrences(rule({ unit: "day" }), anchor, {
       horizon: 3,
@@ -94,7 +94,7 @@ describe("series/utils listOccurrences", () => {
   });
 });
 
-describe("series/utils formatRecurrenceText", () => {
+describe("series/utils текст правила", () => {
   it("описывает правило текстом для бейджа", () => {
     expect(formatRecurrenceText(rule({ unit: "day" }), anchor)).toBe(
       "каждый день · 19:00",
@@ -108,7 +108,7 @@ describe("series/utils formatRecurrenceText", () => {
   });
 });
 
-describe("series/utils getGoingCount", () => {
+describe("series/utils кто идёт", () => {
   it("считает идущих: без отметки идёт, пропуск вычитается", () => {
     const members = [{ id: "a" }, { id: "b" }, { id: "c" }] as SeriesMember[];
     const marks = [

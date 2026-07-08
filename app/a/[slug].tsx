@@ -71,10 +71,14 @@ export default function ActivityPage() {
 }
 
 function LikeButton({ slug }: { slug: string }) {
-  const { isLiked, toggle } = useLikeActivity(slug);
+  const { isLiked, toggle, isToggling } = useLikeActivity(slug);
 
   return (
-    <Button title={isLiked ? "♥ Нравится" : "♡ Нравится"} onPress={toggle} />
+    <Button
+      title={isLiked ? "♥ Нравится" : "♡ Нравится"}
+      onPress={toggle}
+      disabled={isToggling}
+    />
   );
 }
 

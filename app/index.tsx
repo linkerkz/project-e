@@ -4,7 +4,10 @@ import { useActivities } from "../src/entities/activity/hooks";
 import type { Activity } from "../src/entities/activity/types";
 import { useSeries } from "../src/entities/series/hooks";
 import type { SeriesWithMeetings } from "../src/entities/series/types";
-import { formatRecurrenceText } from "../src/entities/series/utils";
+import {
+  formatRecurrenceText,
+  listOccurrences,
+} from "../src/entities/series/utils";
 import { ErrorText } from "../src/shared/ui/ErrorText";
 import { Input } from "../src/shared/ui/Input";
 import { LoadingText } from "../src/shared/ui/LoadingText";
@@ -16,8 +19,9 @@ type FeedItem = { key: string; date: number; node: React.ReactNode };
 export default function HomePage() {
   const [city, setCity] = useState("");
   const [query, setQuery] = useState("");
-  const activities = useActivities({ city: city.trim(), query: query.trim() });
-  const series = useSeries();
+  const filter = { city: city.trim(), query: query.trim() };
+  const activities = useActivities(filter);
+  const series = useSeries(filter);
   const items = buildFeed(activities.data ?? [], series.data ?? []);
   const isLoading = activities.isLoading || series.isLoading;
 
@@ -83,9 +87,10 @@ function toActivityItem(activity: Activity): FeedItem {
 
 function toSeriesItem(series: SeriesWithMeetings): FeedItem {
   const next = nextMeetingDate(series);
+  const schedule = formatRecurrenceText(series.recurrence, series.starts_at);
   return {
     key: `series-${series.id}`,
-    date: next.getTime(),
+    date: next?.getTime() ?? Number.POSITIVE_INFINITY,
     node: (
       <View
         key={`series-${series.id}`}
@@ -95,8 +100,9 @@ function toSeriesItem(series: SeriesWithMeetings): FeedItem {
           {series.title} — {series.city} · серия
         </Text>
         <Text className="text-gray-600">
-          {formatRecurrenceText(series.recurrence, series.starts_at)} ·
-          ближайшая: {next.toLocaleString()}
+          {next
+            ? `${schedule} · ближайшая: ${next.toLocaleString()}`
+            : `${schedule} · ближайших встреч нет`}
         </Text>
         <TextLink href={`/s/${series.slug}`}>открыть</TextLink>
       </View>
@@ -104,13 +110,18 @@ function toSeriesItem(series: SeriesWithMeetings): FeedItem {
   };
 }
 
-// Ближайшая активная встреча в будущем; если слотов ещё нет — старт серии.
-function nextMeetingDate(series: SeriesWithMeetings): Date {
+// Ближайшая встреча в будущем: активный слот или следующая дата по правилу.
+// Будущих встреч нет — возвращаем null, чтобы не поднимать серию прошедшим стартом.
+function nextMeetingDate(series: SeriesWithMeetings): Date | null {
   const now = Date.now();
-  const upcoming = series.meetings
+  const fromMeetings = series.meetings
     .filter((meeting) => meeting.status === "active")
-    .map((meeting) => new Date(meeting.starts_at))
-    .filter((date) => date.getTime() >= now)
-    .sort((a, b) => a.getTime() - b.getTime());
-  return upcoming[0] ?? new Date(series.starts_at);
+    .map((meeting) => new Date(meeting.starts_at).getTime());
+  const fromRule = listOccurrences(series.recurrence, series.starts_at).map(
+    (iso) => new Date(iso).getTime(),
+  );
+  const upcoming = [...fromMeetings, ...fromRule]
+    .filter((time) => time >= now)
+    .sort((a, b) => a - b);
+  return upcoming.length > 0 ? new Date(upcoming[0]) : null;
 }

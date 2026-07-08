@@ -108,8 +108,9 @@ export function ManageSeriesForm({
       <Button
         title={isSaving ? "Сохраняем..." : "Сохранить"}
         onPress={handleSubmit(onSubmit)}
+        disabled={isSaving}
       />
-      <Button title="Завершить серию" onPress={onFinish} />
+      <Button title="Завершить серию" onPress={onFinish} disabled={isSaving} />
       <ErrorText>{errors.root?.server?.message}</ErrorText>
     </View>
   );

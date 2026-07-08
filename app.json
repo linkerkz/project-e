@@ -28,7 +28,8 @@
       [
         "expo-image-picker",
         {
-          "photosPermission": "Venty использует фото из галереи для аватара профиля."
+          "photosPermission": "Venty использует фото из галереи для аватара профиля.",
+          "microphonePermission": false
         }
       ]
     ]

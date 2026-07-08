@@ -8,6 +8,14 @@ vi.mock("../../shared/lib/storage", () => ({
   writeDeviceJson: async (key: string, value: unknown) => {
     store.set(key, value);
   },
+  updateDeviceJson: async (
+    key: string,
+    update: (current: unknown) => unknown,
+  ) => {
+    const next = update(store.get(key) ?? null);
+    store.set(key, next);
+    return next;
+  },
 }));
 
 import {

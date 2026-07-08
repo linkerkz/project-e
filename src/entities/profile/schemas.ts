@@ -1,7 +1,5 @@
 import { z } from "zod";
-
-const emptyToNull = (v: unknown) => (v === "" || v === undefined ? null : v);
-const optionalText = z.preprocess(emptyToNull, z.string().nullable());
+import { optionalText } from "../../shared/lib/zodFields";
 
 const socialsSchema = z.object({
   telegram: optionalText,

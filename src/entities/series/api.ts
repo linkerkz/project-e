@@ -12,11 +12,21 @@ import type {
 } from "./types";
 import { listOccurrences } from "./utils";
 
-export async function listSeries() {
-  const { data, error } = await requireSupabase()
+type Params = {
+  city?: string;
+  query?: string;
+};
+
+export async function listSeries(params: Params = {}) {
+  const { city, query } = params;
+  let request = requireSupabase()
     .from("series")
     .select("*, meetings(*)")
-    .eq("status", "active")
+    .eq("status", "active");
+  if (city) request = request.eq("city", city);
+  if (query) request = request.ilike("title", `%${query}%`);
+
+  const { data, error } = await request
     .order("created_at", { ascending: false })
     .limit(50);
   if (error) throw error;

@@ -5,6 +5,7 @@ import { readLikedSlugs, toggleLike } from "../../entities/activity/local";
 // состояние «лайкнуто/нет» на устройстве (по образцу useRespondedFlag).
 export function useLikeActivity(slug?: string) {
   const [isLiked, setIsLiked] = useState(false);
+  const [isToggling, setIsToggling] = useState(false);
 
   useEffect(() => {
     if (slug == null) return;
@@ -23,13 +24,18 @@ export function useLikeActivity(slug?: string) {
   }, [slug]);
 
   async function toggle() {
-    if (slug == null) return;
+    if (slug == null || isToggling) return;
+    setIsToggling(true);
     setIsLiked((liked) => !liked);
-    // Сбой записи не должен ронять UI: оптимистичное состояние переживёт сессию.
     try {
       await toggleLike(slug);
-    } catch {}
+    } catch {
+      // Запись не удалась — откатываем оптимистичное состояние к хранилищу.
+      setIsLiked((liked) => !liked);
+    } finally {
+      setIsToggling(false);
+    }
   }
 
-  return { isLiked, toggle };
+  return { isLiked, toggle, isToggling };
 }

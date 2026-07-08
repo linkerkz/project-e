@@ -5,7 +5,7 @@ import { FieldShell } from "./FieldShell";
 
 type Option<Value extends string> = {
   value: Value;
-  label: ReactNode;
+  label: string;
 };
 
 type Props<Value extends string> = {

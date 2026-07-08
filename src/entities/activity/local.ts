@@ -1,4 +1,4 @@
-import { readDeviceJson, writeDeviceJson } from "../../shared/lib/storage";
+import { readDeviceJson, updateDeviceJson } from "../../shared/lib/storage";
 import type { Activity } from "./types";
 
 // Локальный список созданных на устройстве активностей — данные для экрана
@@ -19,11 +19,11 @@ export async function readMyActivities(): Promise<MyActivity[]> {
 }
 
 export async function addMyActivity(activity: Activity) {
-  const list = await readMyActivities();
-  if (list.some((item) => item.slug === activity.slug)) return list;
-  const next = [toMyActivity(activity), ...list];
-  await writeDeviceJson(myActivitiesKey, next);
-  return next;
+  return updateDeviceJson<MyActivity[]>(myActivitiesKey, (current) => {
+    const list = current ?? [];
+    if (list.some((item) => item.slug === activity.slug)) return list;
+    return [toMyActivity(activity), ...list];
+  });
 }
 
 function toMyActivity(activity: Activity): MyActivity {
@@ -46,10 +46,10 @@ export async function readLikedSlugs(): Promise<string[]> {
 }
 
 export async function toggleLike(slug: string): Promise<string[]> {
-  const list = await readLikedSlugs();
-  const next = list.includes(slug)
-    ? list.filter((item) => item !== slug)
-    : [slug, ...list];
-  await writeDeviceJson(likedSlugsKey, next);
-  return next;
+  return updateDeviceJson<string[]>(likedSlugsKey, (current) => {
+    const list = current ?? [];
+    return list.includes(slug)
+      ? list.filter((item) => item !== slug)
+      : [slug, ...list];
+  });
 }

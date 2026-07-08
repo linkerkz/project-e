@@ -27,6 +27,8 @@ export default function ManageSeriesPage() {
     cancelMeeting,
     finishSeries,
     isSaving,
+    isRescheduling,
+    isCancelling,
   } = useManageSeriesForm();
 
   if (isLoading) return <LoadingPage />;
@@ -52,6 +54,8 @@ export default function ManageSeriesPage() {
         meetings={meetings}
         onReschedule={rescheduleMeeting}
         onCancel={cancelMeeting}
+        isRescheduling={isRescheduling}
+        isCancelling={isCancelling}
       />
       <Members members={members} />
     </Page>
@@ -62,9 +66,17 @@ type MeetingsProps = {
   meetings: Meeting[];
   onReschedule: (id: string, startsAt: string) => void;
   onCancel: (id: string) => void;
+  isRescheduling: boolean;
+  isCancelling: boolean;
 };
 
-function Meetings({ meetings, onReschedule, onCancel }: MeetingsProps) {
+function Meetings({
+  meetings,
+  onReschedule,
+  onCancel,
+  isRescheduling,
+  isCancelling,
+}: MeetingsProps) {
   return (
     <View className="gap-2">
       <Text className="text-xl font-bold">Встречи</Text>
@@ -76,6 +88,8 @@ function Meetings({ meetings, onReschedule, onCancel }: MeetingsProps) {
           meeting={meeting}
           onReschedule={onReschedule}
           onCancel={onCancel}
+          isRescheduling={isRescheduling}
+          isCancelling={isCancelling}
         />
       ))}
     </View>
@@ -86,9 +100,17 @@ type MeetingRowProps = {
   meeting: Meeting;
   onReschedule: (id: string, startsAt: string) => void;
   onCancel: (id: string) => void;
+  isRescheduling: boolean;
+  isCancelling: boolean;
 };
 
-function MeetingRow({ meeting, onReschedule, onCancel }: MeetingRowProps) {
+function MeetingRow({
+  meeting,
+  onReschedule,
+  onCancel,
+  isRescheduling,
+  isCancelling,
+}: MeetingRowProps) {
   const [startsAt, setStartsAt] = useState(
     toDateTimeLocalInputValue(meeting.starts_at),
   );
@@ -109,10 +131,12 @@ function MeetingRow({ meeting, onReschedule, onCancel }: MeetingRowProps) {
           <Button
             title="Перенести"
             onPress={() => onReschedule(meeting.id, startsAt)}
+            disabled={isRescheduling}
           />
           <Button
             title="Отменить встречу"
             onPress={() => onCancel(meeting.id)}
+            disabled={isCancelling}
           />
         </View>
       )}

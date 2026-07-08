@@ -64,11 +64,24 @@ export function useManageSeriesForm() {
   }
 
   async function rescheduleMeeting(id: string, startsAt: string) {
-    await rescheduleMutation.mutateAsync({ id, startsAt: toIsoDate(startsAt) });
+    try {
+      form.clearErrors("root.server");
+      await rescheduleMutation.mutateAsync({
+        id,
+        startsAt: toIsoDate(startsAt),
+      });
+    } catch (error) {
+      setFormServerError(form.setError, "Не удалось перенести встречу", error);
+    }
   }
 
   async function cancelMeeting(id: string) {
-    await cancelMutation.mutateAsync(id);
+    try {
+      form.clearErrors("root.server");
+      await cancelMutation.mutateAsync(id);
+    } catch (error) {
+      setFormServerError(form.setError, "Не удалось отменить встречу", error);
+    }
   }
 
   async function finishSeries() {
@@ -100,5 +113,7 @@ export function useManageSeriesForm() {
     cancelMeeting,
     finishSeries,
     isSaving: updateMutation.isPending,
+    isRescheduling: rescheduleMutation.isPending,
+    isCancelling: cancelMutation.isPending,
   };
 }
