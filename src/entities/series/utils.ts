@@ -1,4 +1,4 @@
-import type { MeetingMark, Recurrence, SeriesMember } from "./types";
+import type { Meeting, MeetingMark, Recurrence, SeriesMember } from "./types";
 
 type ListOptions = { horizon?: number };
 
@@ -51,6 +51,26 @@ export function getGoingCount(
       .map((mark) => mark.member_id),
   );
   return members.filter((member) => !skipped.has(member.id)).length;
+}
+
+// Ближайшая активная встреча позже указанного момента (по умолчанию — сейчас).
+// Цель напоминания серии: отменённые и уже прошедшие встречи отбрасываем.
+export function nextMeeting(
+  meetings: Meeting[],
+  after: string = new Date().toISOString(),
+): Meeting | null {
+  const afterMs = new Date(after).getTime();
+  const upcoming = meetings
+    .filter(
+      (meeting) =>
+        meeting.status === "active" &&
+        new Date(meeting.starts_at).getTime() > afterMs,
+    )
+    .sort(
+      (a, b) =>
+        new Date(a.starts_at).getTime() - new Date(b.starts_at).getTime(),
+    );
+  return upcoming[0] ?? null;
 }
 
 function occurrenceLimit(recurrence: Recurrence, horizon: number) {

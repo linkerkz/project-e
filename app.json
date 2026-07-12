@@ -31,7 +31,8 @@
           "photosPermission": "Venty использует фото из галереи для аватара профиля.",
           "microphonePermission": false
         }
-      ]
+      ],
+      "expo-notifications"
     ]
   }
 }

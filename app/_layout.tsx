@@ -1,9 +1,23 @@
 import "../global.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import * as Notifications from "expo-notifications";
 import { Stack } from "expo-router";
 import { useState } from "react";
-import { Text, View } from "react-native";
+import { Platform, Text, View } from "react-native";
 import { TextLink } from "../src/shared/ui/TextLink";
+
+// Показ запланированного напоминания, пока приложение на переднем плане.
+// На web expo-notifications нет — обработчик ставим только на нативе.
+if (Platform.OS !== "web") {
+  Notifications.setNotificationHandler({
+    handleNotification: async () => ({
+      shouldPlaySound: false,
+      shouldSetBadge: false,
+      shouldShowBanner: true,
+      shouldShowList: true,
+    }),
+  });
+}
 
 export default function RootLayout() {
   const [client] = useState(() => new QueryClient());

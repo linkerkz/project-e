@@ -37,8 +37,15 @@ export default function SeriesPage() {
   const meetings = useMeetings(series?.id).data ?? [];
   const members = useMembers(series?.id).data ?? [];
   const marks = useMarks(meetings.map((meeting) => meeting.id)).data ?? [];
-  const { membership, form, join, leave, isJoining } = useJoinSeries(series);
-  const { toggle } = useMarkMeeting(membership?.memberId);
+  const { membership, form, join, leave, isJoining } = useJoinSeries(
+    series,
+    meetings,
+  );
+  const { toggle } = useMarkMeeting({
+    memberId: membership?.memberId,
+    series,
+    meetings,
+  });
 
   // Слоты досоздаются лениво при открытии страницы серии.
   useEffect(() => {

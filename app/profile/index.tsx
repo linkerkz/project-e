@@ -8,6 +8,12 @@ import {
   formatRegisteredAt,
   getFilledSocials,
 } from "../../src/entities/profile/utils";
+import {
+  useReminderSettings,
+  useSaveReminderSettings,
+} from "../../src/entities/reminder/hooks";
+import { defaultReminderSettings } from "../../src/entities/reminder/settings";
+import { hoursWord, offsetOptions } from "../../src/entities/reminder/utils";
 import { useMyMemberships, useMySeries } from "../../src/entities/series/hooks";
 import type { Membership, MySeries } from "../../src/entities/series/local";
 import { Avatar } from "../../src/shared/ui/Avatar";
@@ -38,6 +44,7 @@ export default function ProfilePage() {
         visited={myResponses.data?.length ?? 0}
       />
       <Socials profile={profile} />
+      <ReminderSettings />
       <MyActivities items={myActivities.data ?? []} />
       <MySeriesList items={mySeries.data ?? []} />
       <AttendedSeries items={myMemberships.data ?? []} />
@@ -97,6 +104,43 @@ function Socials({ profile }: { profile: Profile }) {
           onPress={() => openExternal(social.url)}
         />
       ))}
+    </View>
+  );
+}
+
+function ReminderSettings() {
+  const settingsQuery = useReminderSettings();
+  const save = useSaveReminderSettings();
+  const settings = settingsQuery.data ?? defaultReminderSettings;
+
+  const toggle = () => save.mutate({ ...settings, enabled: !settings.enabled });
+  const pickOffset = (offsetHours: number) =>
+    save.mutate({ enabled: true, offsetHours });
+
+  return (
+    <View className="gap-2 border border-gray-400 p-3">
+      <Text className="text-xl font-bold">Напоминания</Text>
+      <Button
+        title={`${settings.enabled ? "[x]" : "[ ]"} Напоминать о начале ивента`}
+        onPress={toggle}
+      />
+      {settings.enabled ? (
+        <View className="gap-2">
+          <Text>За сколько предупредить:</Text>
+          <View className="flex-row flex-wrap gap-2">
+            {offsetOptions.map((hours) => (
+              <Button
+                key={hours}
+                title={`${settings.offsetHours === hours ? "[x]" : "[ ]"} ${hours} ${hoursWord(hours)}`}
+                onPress={() => pickOffset(hours)}
+              />
+            ))}
+          </View>
+          <Text className="text-gray-500">
+            Уже запланированные напоминания сохранят прежнее время.
+          </Text>
+        </View>
+      ) : null}
     </View>
   );
 }

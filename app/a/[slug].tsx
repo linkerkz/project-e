@@ -25,6 +25,7 @@ export default function ActivityPage() {
     submit,
     isSaving,
     hasResponded,
+    reminderScheduled,
   } = useRespondToActivityForm();
 
   if (isLoading) return <LoadingPage />;
@@ -61,6 +62,7 @@ export default function ActivityPage() {
           Ты уже откликнулся с этого устройства.
         </Text>
       ) : null}
+      {reminderScheduled ? <Text>Напомним за 2 часа до начала.</Text> : null}
       <ParticipantList
         participants={participants}
         loading={participantsLoading}

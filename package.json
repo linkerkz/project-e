@@ -12,6 +12,7 @@
     "expo-crypto": "~56.0.4",
     "expo-image-picker": "~56.0.18",
     "expo-linking": "~56.0.13",
+    "expo-notifications": "~56.0.20",
     "expo-router": "~56.2.8",
     "expo-status-bar": "~56.0.4",
     "nativewind": "^4.2.4",
