@@ -8,14 +8,12 @@ describe("participant/mappers", () => {
         name: "Анна",
         telegram: "",
         status: "going",
-        comment: "",
       }),
     ).toEqual({
       activity_id: "activity-1",
       name: "Анна",
       telegram: null,
       status: "going",
-      comment: null,
     });
   });
 
@@ -24,15 +22,13 @@ describe("participant/mappers", () => {
       mapParticipantFormToInput("activity-1", {
         name: "Анна",
         telegram: "@anna",
-        status: "maybe",
-        comment: "Буду позже",
+        status: "going",
       }),
     ).toEqual({
       activity_id: "activity-1",
       name: "Анна",
       telegram: "@anna",
-      status: "maybe",
-      comment: "Буду позже",
+      status: "going",
     });
   });
 });

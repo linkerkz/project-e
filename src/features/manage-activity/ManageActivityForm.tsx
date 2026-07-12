@@ -78,6 +78,12 @@ export function ManageActivityForm({
         label="ссылка на обложку"
         error={errors.cover_url?.message}
       />
+      <FormField
+        control={control}
+        name="chat_url"
+        label="ссылка на чат"
+        error={errors.chat_url?.message}
+      />
       <Controller
         control={control}
         name="status"

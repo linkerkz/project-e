@@ -16,5 +16,4 @@ export type CreateParticipantInput = {
   name: string;
   telegram?: string | null;
   status: ParticipantStatus;
-  comment?: string | null;
 };

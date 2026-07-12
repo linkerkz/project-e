@@ -1,3 +1,8 @@
+import {
+  toDateTimeLocalInputValue,
+  toIsoDate,
+} from "../../shared/lib/datetime";
+import { generateEditToken, generateSlug } from "../../shared/lib/publicLink";
 import type {
   CreateActivityForm,
   UpdateActivityForm,
@@ -8,12 +13,6 @@ import type {
   CreateActivityInput,
   UpdateActivityInput,
 } from "./types";
-import {
-  generateActivitySlug,
-  generateEditToken,
-  toDateTimeLocalInputValue,
-  toIsoDate,
-} from "./utils";
 
 export function mapCreateActivityFormToInput(
   form: CreateActivityForm,
@@ -21,7 +20,7 @@ export function mapCreateActivityFormToInput(
   return {
     ...form,
     starts_at: toIsoDate(form.starts_at),
-    slug: generateActivitySlug(form.title),
+    slug: generateSlug(form.title),
     edit_token: generateEditToken(),
     status: "active",
   };
@@ -47,6 +46,7 @@ export function mapActivityToUpdateForm(
     starts_at: toDateTimeLocalInputValue(activity.starts_at),
     capacity: activity.capacity,
     cover_url: activity.cover_url ?? "",
+    chat_url: activity.chat_url ?? "",
     status: activity.status,
   };
 }
