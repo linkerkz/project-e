@@ -15,6 +15,7 @@ const validForm = {
   capacity: "",
   cover_url: "",
   chat_url: "",
+  category: "sport",
 };
 
 describe("activity/schemas", () => {
@@ -67,6 +68,16 @@ describe("activity/schemas", () => {
     const ok = { ...validForm, chat_url: "https://t.me/club" };
 
     expect(createActivitySchema.safeParse(ok).success).toBe(true);
+  });
+
+  it("требует категорию и отклоняет неизвестный ключ", () => {
+    expect(
+      createActivitySchema.safeParse({ ...validForm, category: "" }).success,
+    ).toBe(false);
+    expect(
+      createActivitySchema.safeParse({ ...validForm, category: "мусор" })
+        .success,
+    ).toBe(false);
   });
 
   it("в форме обновления добавляет статус", () => {

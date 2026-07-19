@@ -22,6 +22,7 @@ describe("activity/mappers", () => {
       capacity: null,
       cover_url: null,
       chat_url: null,
+      category: "sport",
     });
 
     expect(input).toMatchObject({
@@ -32,6 +33,7 @@ describe("activity/mappers", () => {
       capacity: null,
       cover_url: null,
       chat_url: null,
+      category: "sport",
       status: "active",
     });
     expect(input.starts_at).toBe(new Date("2026-05-30T12:30").toISOString());
@@ -49,8 +51,10 @@ describe("activity/mappers", () => {
       capacity: 10,
       cover_url: "https://example.com/image.jpg",
       chat_url: "https://t.me/club",
+      category: "music",
     });
 
+    expect(input.category).toBe("music");
     expect(input.description).toBe("Описание");
     expect(input.location_text).toBe("Парк");
     expect(input.capacity).toBe(10);
@@ -68,6 +72,7 @@ describe("activity/mappers", () => {
       capacity: null,
       cover_url: null,
       chat_url: null,
+      category: "sport",
       status: "cancelled",
     });
 
@@ -80,6 +85,7 @@ describe("activity/mappers", () => {
       capacity: null,
       cover_url: null,
       chat_url: null,
+      category: "sport",
       status: "cancelled",
     });
   });
@@ -97,6 +103,18 @@ describe("activity/mappers", () => {
 
     expect(form.chat_url).toBe("https://t.me/club");
   });
+
+  it("преобразует null category легаси в пустую строку для формы", () => {
+    const form = mapActivityToUpdateForm(buildActivity({ category: null }));
+
+    expect(form.category).toBe("");
+  });
+
+  it("сохраняет заполненную категорию в форме управления", () => {
+    const form = mapActivityToUpdateForm(buildActivity({ category: "tech" }));
+
+    expect(form.category).toBe("tech");
+  });
 });
 
 function buildActivity(overrides: Partial<Activity>): Activity {
@@ -111,6 +129,7 @@ function buildActivity(overrides: Partial<Activity>): Activity {
     capacity: null,
     cover_url: null,
     chat_url: null,
+    category: null,
     edit_token: "token",
     status: "active",
     created_at: "2026-05-01T00:00:00.000Z",

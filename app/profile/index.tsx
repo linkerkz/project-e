@@ -16,6 +16,7 @@ import { defaultReminderSettings } from "../../src/entities/reminder/settings";
 import { hoursWord, offsetOptions } from "../../src/entities/reminder/utils";
 import { useMyMemberships, useMySeries } from "../../src/entities/series/hooks";
 import type { Membership, MySeries } from "../../src/entities/series/local";
+import { categoryLabel } from "../../src/shared/lib/categories";
 import { Avatar } from "../../src/shared/ui/Avatar";
 import { BackLink } from "../../src/shared/ui/BackLink";
 import { Button } from "../../src/shared/ui/Button";
@@ -72,7 +73,9 @@ function ProfileHeader({ profile }: { profile: Profile }) {
       <Text className="text-3xl font-bold">{profile.fullName}</Text>
       {profile.city != null ? <Text>{profile.city}</Text> : null}
       {profile.categories.length > 0 ? (
-        <Text>Интересы: {profile.categories.join(", ")}</Text>
+        <Text>
+          Интересы: {profile.categories.map(categoryLabel).join(", ")}
+        </Text>
       ) : null}
       <Text>На Venty с {formatRegisteredAt(profile.registeredAt)}</Text>
     </View>

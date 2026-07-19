@@ -37,6 +37,7 @@ const activity: Activity = {
   capacity: null,
   cover_url: null,
   chat_url: null,
+  category: null,
   edit_token: "token",
   status: "active",
   created_at: "",

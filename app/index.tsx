@@ -2,15 +2,23 @@ import { useState } from "react";
 import { Text, View } from "react-native";
 import { useActivities } from "../src/entities/activity/hooks";
 import type { Activity } from "../src/entities/activity/types";
+import { useProfile } from "../src/entities/profile/hooks";
 import { useSeries } from "../src/entities/series/hooks";
 import type { SeriesWithMeetings } from "../src/entities/series/types";
 import {
   formatRecurrenceText,
   listOccurrences,
 } from "../src/entities/series/utils";
+import {
+  type CategoryKey,
+  categoryLabel,
+  categoryOptions,
+} from "../src/shared/lib/categories";
+import { Button } from "../src/shared/ui/Button";
 import { ErrorText } from "../src/shared/ui/ErrorText";
 import { Input } from "../src/shared/ui/Input";
 import { LoadingText } from "../src/shared/ui/LoadingText";
+import { MultiSelect } from "../src/shared/ui/MultiSelect";
 import { Page } from "../src/shared/ui/Page";
 import { TextLink } from "../src/shared/ui/TextLink";
 
@@ -19,7 +27,8 @@ type FeedItem = { key: string; date: number; node: React.ReactNode };
 export default function HomePage() {
   const [city, setCity] = useState("");
   const [query, setQuery] = useState("");
-  const filter = { city: city.trim(), query: query.trim() };
+  const [categories, setCategories] = useState<CategoryKey[]>([]);
+  const filter = { city: city.trim(), query: query.trim(), categories };
   const activities = useActivities(filter);
   const series = useSeries(filter);
   const items = buildFeed(activities.data ?? [], series.data ?? []);
@@ -42,6 +51,7 @@ export default function HomePage() {
         onChangeText={setQuery}
         placeholder="Что ищем?"
       />
+      <CategoryFilter values={categories} onChange={setCategories} />
       <Text className="text-2xl font-bold">Ближайшие мероприятия:</Text>
       {isLoading ? <LoadingText /> : null}
       <ErrorText
@@ -53,6 +63,32 @@ export default function HomePage() {
       ) : null}
       <View className="gap-2">{items.map((item) => item.node)}</View>
     </Page>
+  );
+}
+
+type CategoryFilterProps = {
+  values: CategoryKey[];
+  onChange: (values: CategoryKey[]) => void;
+};
+
+// Фильтр по категориям + кнопка «По моим интересам»: подставляет категории
+// профиля в фильтр. Автоподстановки при загрузке нет — пустая лента у нового
+// пользователя хуже нефильтрованной.
+function CategoryFilter({ values, onChange }: CategoryFilterProps) {
+  const interests = useProfile().data?.categories ?? [];
+
+  return (
+    <View className="gap-2">
+      <MultiSelect
+        label="Категории"
+        values={values}
+        onChange={onChange}
+        options={categoryOptions}
+      />
+      {interests.length > 0 ? (
+        <Button title="По моим интересам" onPress={() => onChange(interests)} />
+      ) : null}
+    </View>
   );
 }
 
@@ -79,6 +115,7 @@ function toActivityItem(activity: Activity): FeedItem {
         <Text>
           {activity.title} — {activity.city} — {startsAt.toLocaleString()}
         </Text>
+        <CategoryBadge category={activity.category} />
         <TextLink href={`/a/${activity.slug}`}>открыть</TextLink>
       </View>
     ),
@@ -104,10 +141,17 @@ function toSeriesItem(series: SeriesWithMeetings): FeedItem {
             ? `${schedule} · ближайшая: ${next.toLocaleString()}`
             : `${schedule} · ближайших встреч нет`}
         </Text>
+        <CategoryBadge category={series.category} />
         <TextLink href={`/s/${series.slug}`}>открыть</TextLink>
       </View>
     ),
   };
+}
+
+// Подпись категории. Легаси без категории (`null`) — блок не показываем.
+function CategoryBadge({ category }: { category: CategoryKey | null }) {
+  if (category == null) return null;
+  return <Text className="text-gray-600">{categoryLabel(category)}</Text>;
 }
 
 // Ближайшая встреча в будущем: активный слот или следующая дата по правилу.

@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import type { CategoryKey } from "../../shared/lib/categories";
 import {
   createActivity,
   getActivityByEditToken,
@@ -12,6 +13,7 @@ import type { UpdateActivityInput } from "./types";
 type ActivitiesFilter = {
   city?: string;
   query?: string;
+  categories?: CategoryKey[];
 };
 
 export const activityKeys = {

@@ -29,6 +29,7 @@ describe("series/mappers", () => {
       capacity: null,
       cover_url: null,
       chat_url: null,
+      category: "networking",
       recurrence,
     });
 
@@ -36,6 +37,7 @@ describe("series/mappers", () => {
       title: "Speaking club",
       description: null,
       city: "Алматы",
+      category: "networking",
       recurrence,
       status: "active",
     });
@@ -80,6 +82,18 @@ describe("series/mappers", () => {
     expect(form.status).toBe("finished");
     expect(form.recurrence).toEqual(recurrence);
   });
+
+  it("преобразует null category легаси в пустую строку для формы", () => {
+    const form = mapSeriesToUpdateForm(buildSeries({ category: null }));
+
+    expect(form.category).toBe("");
+  });
+
+  it("сохраняет заполненную категорию в форме управления", () => {
+    const form = mapSeriesToUpdateForm(buildSeries({ category: "tech" }));
+
+    expect(form.category).toBe("tech");
+  });
 });
 
 function buildSeries(overrides: Partial<Series>): Series {
@@ -94,6 +108,7 @@ function buildSeries(overrides: Partial<Series>): Series {
     capacity: null,
     cover_url: null,
     chat_url: null,
+    category: null,
     recurrence,
     edit_token: "token",
     status: "active",

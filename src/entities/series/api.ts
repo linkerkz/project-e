@@ -1,3 +1,4 @@
+import type { CategoryKey } from "../../shared/lib/categories";
 import { requireSupabase } from "../../shared/supabase/client";
 import type {
   CreateMemberInput,
@@ -15,16 +16,18 @@ import { listOccurrences } from "./utils";
 type Params = {
   city?: string;
   query?: string;
+  categories?: CategoryKey[];
 };
 
 export async function listSeries(params: Params = {}) {
-  const { city, query } = params;
+  const { city, query, categories } = params;
   let request = requireSupabase()
     .from("series")
     .select("*, meetings(*)")
     .eq("status", "active");
   if (city) request = request.eq("city", city);
   if (query) request = request.ilike("title", `%${query}%`);
+  if (categories?.length) request = request.in("category", categories);
 
   const { data, error } = await request
     .order("created_at", { ascending: false })

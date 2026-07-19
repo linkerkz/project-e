@@ -6,6 +6,7 @@ import type {
 } from "../../entities/activity/schemas";
 import type { ActivityStatus } from "../../entities/activity/types";
 import { activityStatusOptions } from "../../entities/activity/utils";
+import { categoryOptions } from "../../shared/lib/categories";
 import { Button } from "../../shared/ui/Button";
 import { DateTimeInput } from "../../shared/ui/DateTimeInput";
 import { ErrorText } from "../../shared/ui/ErrorText";
@@ -83,6 +84,19 @@ export function ManageActivityForm({
         name="chat_url"
         label="ссылка на чат"
         error={errors.chat_url?.message}
+      />
+      <Controller
+        control={control}
+        name="category"
+        render={({ field }) => (
+          <Select
+            label="категория"
+            value={field.value}
+            onChange={field.onChange}
+            options={categoryOptions}
+            error={errors.category?.message}
+          />
+        )}
       />
       <Controller
         control={control}

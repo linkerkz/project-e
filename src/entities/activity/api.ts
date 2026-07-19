@@ -1,3 +1,4 @@
+import type { CategoryKey } from "../../shared/lib/categories";
 import { requireSupabase } from "../../shared/supabase/client";
 import type {
   Activity,
@@ -8,10 +9,11 @@ import type {
 type Params = {
   city?: string;
   query?: string;
+  categories?: CategoryKey[];
 };
 
 export async function listActivities(params: Params = {}) {
-  const { city, query } = params;
+  const { city, query, categories } = params;
   const nowIso = new Date().toISOString();
   let request = requireSupabase()
     .from("activities")
@@ -20,6 +22,7 @@ export async function listActivities(params: Params = {}) {
     .gte("starts_at", nowIso);
   if (city) request = request.eq("city", city);
   if (query) request = request.ilike("title", `%${query}%`);
+  if (categories?.length) request = request.in("category", categories);
 
   const { data, error } = await request
     .order("starts_at", { ascending: true })

@@ -39,16 +39,27 @@ describe("profile/schemas", () => {
     const result = profileSchema.parse({
       fullName: "Анна",
       city: "Москва",
-      categories: ["Спорт"],
+      categories: ["sport"],
       photoUrl: "https://example.com/p.jpg",
       socials: { ...emptySocials, telegram: "@anna" },
     });
 
     expect(result.city).toBe("Москва");
-    expect(result.categories).toEqual(["Спорт"]);
+    expect(result.categories).toEqual(["sport"]);
     expect(result.photoUrl).toBe("https://example.com/p.jpg");
     expect(result.socials.telegram).toBe("@anna");
     expect(result.socials.instagram).toBeNull();
+  });
+
+  it("принимает только ключи категорий, русскую подпись отклоняет", () => {
+    const base = { fullName: "Анна", city: "", socials: emptySocials };
+
+    expect(
+      profileSchema.safeParse({ ...base, categories: ["sport"] }).success,
+    ).toBe(true);
+    expect(
+      profileSchema.safeParse({ ...base, categories: ["Спорт"] }).success,
+    ).toBe(false);
   });
 
   it("принимает локальный URI фото и отклоняет пустое имя", () => {

@@ -10,6 +10,7 @@ const validForm = {
   capacity: "",
   cover_url: "",
   chat_url: "",
+  category: "networking",
   recurrence: {
     interval: 1,
     unit: "week",
@@ -64,6 +65,15 @@ describe("series/schemas", () => {
 
     expect(
       createSeriesSchema.safeParse({ ...validForm, recurrence }).success,
+    ).toBe(false);
+  });
+
+  it("требует категорию и отклоняет неизвестный ключ", () => {
+    expect(
+      createSeriesSchema.safeParse({ ...validForm, category: "" }).success,
+    ).toBe(false);
+    expect(
+      createSeriesSchema.safeParse({ ...validForm, category: "мусор" }).success,
     ).toBe(false);
   });
 

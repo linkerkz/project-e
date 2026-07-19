@@ -58,6 +58,7 @@ export function mapSeriesToUpdateForm(series: Series): UpdateSeriesFormInput {
     capacity: series.capacity,
     cover_url: series.cover_url ?? "",
     chat_url: series.chat_url ?? "",
+    category: series.category ?? "",
     recurrence: series.recurrence,
     status: series.status,
   };

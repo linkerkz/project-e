@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { categoryKeys } from "../../shared/lib/categories";
 import { isValidDateTime } from "../../shared/lib/datetime";
 import {
   capacity,
@@ -53,6 +54,7 @@ export const createSeriesSchema = z.object({
   capacity,
   cover_url: optionalUrl,
   chat_url: chatUrl,
+  category: z.string().min(1, "Выберите категорию").pipe(z.enum(categoryKeys)),
   recurrence,
 });
 

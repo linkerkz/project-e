@@ -40,7 +40,7 @@ describe("profile/mappers", () => {
     const form = mapProfileToForm({
       fullName: "Анна",
       city: "Москва",
-      categories: ["Спорт"],
+      categories: ["sport"],
       photoUrl: "https://example.com/p.jpg",
       socials: {
         telegram: "@anna",

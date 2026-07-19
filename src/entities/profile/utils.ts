@@ -1,23 +1,5 @@
 import type { ProfileSocials, SocialNetwork } from "./types";
 
-const categoryNames = [
-  "Спорт",
-  "Музыка",
-  "Образование",
-  "Нетворкинг",
-  "Игры",
-  "Искусство",
-  "Еда",
-  "Путешествия",
-  "Технологии",
-  "Волонтёрство",
-];
-
-export const categoryOptions = categoryNames.map((name) => ({
-  value: name,
-  label: name,
-}));
-
 type SocialOption = {
   key: SocialNetwork;
   label: string;

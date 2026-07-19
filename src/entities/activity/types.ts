@@ -1,3 +1,5 @@
+import type { CategoryKey } from "../../shared/lib/categories";
+
 export type ActivityStatus = "active" | "cancelled";
 
 export type Activity = {
@@ -11,6 +13,7 @@ export type Activity = {
   capacity: number | null;
   cover_url: string | null;
   chat_url: string | null;
+  category: CategoryKey | null;
   edit_token: string;
   status: ActivityStatus;
   created_at: string;
@@ -27,6 +30,7 @@ export type CreateActivityInput = {
   capacity?: number | null;
   cover_url?: string | null;
   chat_url?: string | null;
+  category: CategoryKey;
   edit_token: string;
   status: ActivityStatus;
 };

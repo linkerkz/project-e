@@ -4,6 +4,7 @@ import { getParticipantStatusText } from "../../src/entities/participant/utils";
 import { useLikeActivity } from "../../src/features/like-activity/useLikeActivity";
 import { ResponseForm } from "../../src/features/respond-to-activity/ResponseForm";
 import { useRespondToActivityForm } from "../../src/features/respond-to-activity/useRespondToActivityForm";
+import { categoryLabel } from "../../src/shared/lib/categories";
 import { ActivityNotFound } from "../../src/shared/ui/ActivityNotFound";
 import { BackLink } from "../../src/shared/ui/BackLink";
 import { Button } from "../../src/shared/ui/Button";
@@ -42,6 +43,11 @@ export default function ActivityPage() {
         />
       ) : null}
       <Text className="text-3xl font-bold">{activity.title}</Text>
+      {activity.category ? (
+        <Text className="text-gray-600">
+          {categoryLabel(activity.category)}
+        </Text>
+      ) : null}
       <Text>{activity.city}</Text>
       <Text>{activity.location_text}</Text>
       <Text>{new Date(activity.starts_at).toLocaleString()}</Text>

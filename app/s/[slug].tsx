@@ -21,6 +21,7 @@ import {
 import { JoinSeriesForm } from "../../src/features/join-series/JoinSeriesForm";
 import { useJoinSeries } from "../../src/features/join-series/useJoinSeries";
 import { useMarkMeeting } from "../../src/features/mark-meeting/useMarkMeeting";
+import { categoryLabel } from "../../src/shared/lib/categories";
 import { ActivityNotFound } from "../../src/shared/ui/ActivityNotFound";
 import { BackLink } from "../../src/shared/ui/BackLink";
 import { Button } from "../../src/shared/ui/Button";
@@ -89,6 +90,9 @@ function SeriesHeader({ series }: { series: Series }) {
         />
       ) : null}
       <Text className="text-3xl font-bold">{series.title}</Text>
+      {series.category ? (
+        <Text className="text-gray-600">{categoryLabel(series.category)}</Text>
+      ) : null}
       <Text className="text-gray-600">
         {formatRecurrenceText(series.recurrence, series.starts_at)}
       </Text>

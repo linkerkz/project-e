@@ -1,8 +1,11 @@
+import { Controller } from "react-hook-form";
 import { View } from "react-native";
+import { categoryOptions } from "../../shared/lib/categories";
 import { Button } from "../../shared/ui/Button";
 import { DateTimeInput } from "../../shared/ui/DateTimeInput";
 import { ErrorText } from "../../shared/ui/ErrorText";
 import { FormField } from "../../shared/ui/FormField";
+import { Select } from "../../shared/ui/Select";
 import { Textarea } from "../../shared/ui/Textarea";
 import { RecurrenceFields } from "./RecurrenceFields";
 import { useCreateSeriesForm } from "./useCreateSeriesForm";
@@ -65,6 +68,19 @@ export function CreateSeriesForm() {
         name="chat_url"
         label="ссылка на чат"
         error={errors.chat_url?.message}
+      />
+      <Controller
+        control={control}
+        name="category"
+        render={({ field }) => (
+          <Select
+            label="категория, обязательно"
+            value={field.value}
+            onChange={field.onChange}
+            options={categoryOptions}
+            error={errors.category?.message}
+          />
+        )}
       />
       <RecurrenceFields
         control={control}

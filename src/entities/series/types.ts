@@ -1,3 +1,5 @@
+import type { CategoryKey } from "../../shared/lib/categories";
+
 export type RecurrenceUnit = "day" | "week" | "month";
 
 export type RecurrenceEnd =
@@ -25,6 +27,7 @@ export type Series = {
   capacity: number | null;
   cover_url: string | null;
   chat_url: string | null;
+  category: CategoryKey | null;
   recurrence: Recurrence;
   edit_token: string;
   status: SeriesStatus;
@@ -74,6 +77,7 @@ export type CreateSeriesInput = {
   capacity?: number | null;
   cover_url?: string | null;
   chat_url?: string | null;
+  category: CategoryKey;
   recurrence: Recurrence;
   edit_token: string;
   status: SeriesStatus;

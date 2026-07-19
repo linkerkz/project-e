@@ -4,7 +4,8 @@ import type {
   ProfileForm,
   ProfileFormInput,
 } from "../../entities/profile/schemas";
-import { categoryOptions, socialOptions } from "../../entities/profile/utils";
+import { socialOptions } from "../../entities/profile/utils";
+import { categoryOptions } from "../../shared/lib/categories";
 import { Button } from "../../shared/ui/Button";
 import { ErrorText } from "../../shared/ui/ErrorText";
 import { FormField } from "../../shared/ui/FormField";

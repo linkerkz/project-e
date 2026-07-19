@@ -1,7 +1,9 @@
+import type { CategoryKey } from "../../shared/lib/categories";
+
 export type Profile = {
   fullName: string;
   city: string | null;
-  categories: string[];
+  categories: CategoryKey[];
   photoUrl: string | null;
   socials: ProfileSocials;
   registeredAt: string;

@@ -5,6 +5,7 @@ import type {
   UpdateSeriesFormInput,
 } from "../../entities/series/schemas";
 import type { SeriesStatus } from "../../entities/series/types";
+import { categoryOptions } from "../../shared/lib/categories";
 import { Button } from "../../shared/ui/Button";
 import { DateTimeInput } from "../../shared/ui/DateTimeInput";
 import { ErrorText } from "../../shared/ui/ErrorText";
@@ -91,6 +92,19 @@ export function ManageSeriesForm({
         name="chat_url"
         label="ссылка на чат"
         error={errors.chat_url?.message}
+      />
+      <Controller
+        control={control}
+        name="category"
+        render={({ field }) => (
+          <Select
+            label="категория"
+            value={field.value}
+            onChange={field.onChange}
+            options={categoryOptions}
+            error={errors.category?.message}
+          />
+        )}
       />
       <Controller
         control={control}

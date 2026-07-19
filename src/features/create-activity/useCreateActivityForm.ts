@@ -25,6 +25,7 @@ const emptyForm: CreateActivityFormInput = {
   capacity: null,
   cover_url: "",
   chat_url: "",
+  category: "",
 };
 
 export function useCreateActivityForm() {

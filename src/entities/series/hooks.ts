@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import type { CategoryKey } from "../../shared/lib/categories";
 import {
   cancelMeeting,
   createSeries,
@@ -21,6 +22,7 @@ import type { Series, UpdateSeriesInput } from "./types";
 type SeriesFilter = {
   city?: string;
   query?: string;
+  categories?: CategoryKey[];
 };
 
 export const seriesKeys = {

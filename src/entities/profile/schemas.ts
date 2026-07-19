@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { categoryKeys } from "../../shared/lib/categories";
 import { optionalText } from "../../shared/lib/zodFields";
 
 const socialsSchema = z.object({
@@ -13,7 +14,7 @@ const socialsSchema = z.object({
 export const profileSchema = z.object({
   fullName: z.string().trim().min(1, "Имя обязательно"),
   city: optionalText,
-  categories: z.array(z.string()).default([]),
+  categories: z.array(z.enum(categoryKeys)).default([]),
   // Локальный URI выбранного фото (file://, content://, data:), а не web-ссылка —
   // строгую URL-валидацию не применяем, чтобы не отклонять валидные device-URI.
   photoUrl: optionalText,

@@ -47,6 +47,7 @@ export function mapActivityToUpdateForm(
     capacity: activity.capacity,
     cover_url: activity.cover_url ?? "",
     chat_url: activity.chat_url ?? "",
+    category: activity.category ?? "",
     status: activity.status,
   };
 }
