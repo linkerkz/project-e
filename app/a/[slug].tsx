@@ -1,11 +1,14 @@
 import { Image, Text } from "react-native";
+import type { Activity } from "../../src/entities/activity/types";
 import { getCapacityState } from "../../src/entities/activity/utils";
 import { getParticipantStatusText } from "../../src/entities/participant/utils";
 import { useLikeActivity } from "../../src/features/like-activity/useLikeActivity";
 import { ResponseForm } from "../../src/features/respond-to-activity/ResponseForm";
 import { useRespondToActivityForm } from "../../src/features/respond-to-activity/useRespondToActivityForm";
 import { categoryLabel } from "../../src/shared/lib/categories";
+import { buildActivityPublicUrl } from "../../src/shared/lib/publicUrl";
 import { ActivityNotFound } from "../../src/shared/ui/ActivityNotFound";
+import { AddToCalendarButton } from "../../src/shared/ui/AddToCalendarButton";
 import { BackLink } from "../../src/shared/ui/BackLink";
 import { Button } from "../../src/shared/ui/Button";
 import { ChatLinkButton } from "../../src/shared/ui/ChatLinkButton";
@@ -59,6 +62,9 @@ export default function ActivityPage() {
       <CapacityNotice capacity={activity.capacity} going={stats.going} />
       <LikeButton slug={activity.slug} />
       <ShareButton slug={activity.slug} title={activity.title} />
+      {activity.status !== "cancelled" ? (
+        <AddToCalendarButton event={calendarEventFor(activity)} />
+      ) : null}
       {activity.chat_url ? <ChatLinkButton url={activity.chat_url} /> : null}
       {activity.status !== "cancelled" && !hasResponded ? (
         <ResponseForm form={form} isSaving={isSaving} onSubmit={submit} />
@@ -76,6 +82,17 @@ export default function ActivityPage() {
       />
     </Page>
   );
+}
+
+function calendarEventFor(activity: Activity) {
+  return {
+    slug: activity.slug,
+    title: activity.title,
+    description: activity.description,
+    location: activity.location_text,
+    startsAt: activity.starts_at,
+    url: buildActivityPublicUrl(activity.slug),
+  };
 }
 
 function LikeButton({ slug }: { slug: string }) {

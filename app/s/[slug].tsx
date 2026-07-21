@@ -17,12 +17,15 @@ import type {
 import {
   formatRecurrenceText,
   getGoingCount,
+  nextMeeting,
 } from "../../src/entities/series/utils";
 import { JoinSeriesForm } from "../../src/features/join-series/JoinSeriesForm";
 import { useJoinSeries } from "../../src/features/join-series/useJoinSeries";
 import { useMarkMeeting } from "../../src/features/mark-meeting/useMarkMeeting";
 import { categoryLabel } from "../../src/shared/lib/categories";
+import { buildSeriesPublicUrl } from "../../src/shared/lib/publicUrl";
 import { ActivityNotFound } from "../../src/shared/ui/ActivityNotFound";
+import { AddToCalendarButton } from "../../src/shared/ui/AddToCalendarButton";
 import { BackLink } from "../../src/shared/ui/BackLink";
 import { Button } from "../../src/shared/ui/Button";
 import { ChatLinkButton } from "../../src/shared/ui/ChatLinkButton";
@@ -57,12 +60,18 @@ export default function SeriesPage() {
   if (!series) return <ActivityNotFound error={seriesQuery.error} />;
 
   const memberId = membership?.memberId;
+  const upcomingMeeting = nextMeeting(meetings);
 
   return (
     <Page>
       <BackLink />
       <SeriesHeader series={series} />
       <ShareButton slug={series.slug} title={series.title} />
+      {series.status === "active" && upcomingMeeting ? (
+        <AddToCalendarButton
+          event={calendarEventFor(series, upcomingMeeting)}
+        />
+      ) : null}
       {membership ? (
         <JoinedNotice onLeave={leave} chatUrl={series.chat_url} />
       ) : (
@@ -77,6 +86,17 @@ export default function SeriesPage() {
       />
     </Page>
   );
+}
+
+function calendarEventFor(series: Series, meeting: Meeting) {
+  return {
+    slug: `${series.slug}-${meeting.id}`,
+    title: series.title,
+    description: series.description,
+    location: series.location_text,
+    startsAt: meeting.starts_at,
+    url: buildSeriesPublicUrl(series.slug),
+  };
 }
 
 function SeriesHeader({ series }: { series: Series }) {
