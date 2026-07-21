@@ -9,7 +9,15 @@ export function buildSeriesPublicUrl(slug: string) {
 }
 
 function buildPublicUrl(path: string) {
-  if (Platform.OS !== "web" || typeof window === "undefined") return path;
+  const origin = resolveOrigin();
+  return origin === "" ? path : `${origin}${path}`;
+}
 
-  return `${window.location.origin}${path}`;
+function resolveOrigin() {
+  if (Platform.OS === "web" && typeof window !== "undefined") {
+    return window.location.origin;
+  }
+
+  const canonical = process.env.EXPO_PUBLIC_WEB_URL ?? "";
+  return canonical.replace(/\/+$/, "");
 }
