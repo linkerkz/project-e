@@ -14,6 +14,7 @@ import { BackLink } from "../../src/shared/ui/BackLink";
 import { Button } from "../../src/shared/ui/Button";
 import { ChatLinkButton } from "../../src/shared/ui/ChatLinkButton";
 import { LoadingPage } from "../../src/shared/ui/LoadingPage";
+import { OpenInAppBanner } from "../../src/shared/ui/OpenInAppBanner";
 import { Page } from "../../src/shared/ui/Page";
 import { ParticipantList } from "../../src/shared/ui/ParticipantList";
 import { QrCode } from "../../src/shared/ui/QrCode";
@@ -40,6 +41,7 @@ export default function ActivityPage() {
   return (
     <Page>
       <BackLink />
+      <OpenInAppBanner path={`a/${activity.slug}`} />
       {activity.cover_url ? (
         <Image
           source={{ uri: activity.cover_url }}

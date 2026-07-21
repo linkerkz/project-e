@@ -30,6 +30,7 @@ import { BackLink } from "../../src/shared/ui/BackLink";
 import { Button } from "../../src/shared/ui/Button";
 import { ChatLinkButton } from "../../src/shared/ui/ChatLinkButton";
 import { LoadingPage } from "../../src/shared/ui/LoadingPage";
+import { OpenInAppBanner } from "../../src/shared/ui/OpenInAppBanner";
 import { Page } from "../../src/shared/ui/Page";
 import { ShareButton } from "../../src/shared/ui/ShareButton";
 
@@ -65,6 +66,7 @@ export default function SeriesPage() {
   return (
     <Page>
       <BackLink />
+      <OpenInAppBanner path={`s/${series.slug}`} />
       <SeriesHeader series={series} />
       <ShareButton slug={series.slug} title={series.title} />
       {series.status === "active" && upcomingMeeting ? (
