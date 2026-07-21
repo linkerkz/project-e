@@ -1,4 +1,5 @@
-import { Image, Text } from "react-native";
+import { useState } from "react";
+import { Image, Text, View } from "react-native";
 import type { Activity } from "../../src/entities/activity/types";
 import { getCapacityState } from "../../src/entities/activity/utils";
 import { getParticipantStatusText } from "../../src/entities/participant/utils";
@@ -15,6 +16,7 @@ import { ChatLinkButton } from "../../src/shared/ui/ChatLinkButton";
 import { LoadingPage } from "../../src/shared/ui/LoadingPage";
 import { Page } from "../../src/shared/ui/Page";
 import { ParticipantList } from "../../src/shared/ui/ParticipantList";
+import { QrCode } from "../../src/shared/ui/QrCode";
 import { ShareButton } from "../../src/shared/ui/ShareButton";
 
 export default function ActivityPage() {
@@ -65,6 +67,7 @@ export default function ActivityPage() {
       {activity.status !== "cancelled" ? (
         <AddToCalendarButton event={calendarEventFor(activity)} />
       ) : null}
+      <QrBlock url={buildActivityPublicUrl(activity.slug)} />
       {activity.chat_url ? <ChatLinkButton url={activity.chat_url} /> : null}
       {activity.status !== "cancelled" && !hasResponded ? (
         <ResponseForm form={form} isSaving={isSaving} onSubmit={submit} />
@@ -93,6 +96,20 @@ function calendarEventFor(activity: Activity) {
     startsAt: activity.starts_at,
     url: buildActivityPublicUrl(activity.slug),
   };
+}
+
+function QrBlock({ url }: { url: string }) {
+  const [visible, setVisible] = useState(false);
+
+  return (
+    <View className="gap-1">
+      <Button
+        title={visible ? "Скрыть QR-код" : "Показать QR-код"}
+        onPress={() => setVisible(!visible)}
+      />
+      {visible ? <QrCode url={url} /> : null}
+    </View>
+  );
 }
 
 function LikeButton({ slug }: { slug: string }) {

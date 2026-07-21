@@ -11,6 +11,7 @@ import { Button } from "../../../src/shared/ui/Button";
 import { DateTimeInput } from "../../../src/shared/ui/DateTimeInput";
 import { LoadingPage } from "../../../src/shared/ui/LoadingPage";
 import { Page } from "../../../src/shared/ui/Page";
+import { QrCode } from "../../../src/shared/ui/QrCode";
 import { ShareButton } from "../../../src/shared/ui/ShareButton";
 
 export default function ManageSeriesPage() {
@@ -40,6 +41,10 @@ export default function ManageSeriesPage() {
       <Text className="text-2xl font-bold">Управление серией</Text>
       <Text>Публичная ссылка: {publicUrl}</Text>
       <ShareButton slug={series.slug} title={series.title} />
+      <View className="gap-1">
+        <Text className="text-xl font-bold">QR для афиши</Text>
+        <QrCode url={publicUrl} />
+      </View>
       <ManageSeriesForm
         form={form}
         recurrenceText={formatRecurrenceText(

@@ -11,6 +11,7 @@
       "**",
       "!**/node_modules",
       "!**/.expo",
+      "!**/.orch",
       "!**/.husky/_",
       "!**/dist",
       "!**/build",

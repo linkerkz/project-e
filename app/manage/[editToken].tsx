@@ -1,4 +1,4 @@
-import { Text } from "react-native";
+import { Text, View } from "react-native";
 import { getParticipantStatusText } from "../../src/entities/participant/utils";
 import { ManageActivityForm } from "../../src/features/manage-activity/ManageActivityForm";
 import { useManageActivityForm } from "../../src/features/manage-activity/useManageActivityForm";
@@ -7,6 +7,7 @@ import { BackLink } from "../../src/shared/ui/BackLink";
 import { LoadingPage } from "../../src/shared/ui/LoadingPage";
 import { Page } from "../../src/shared/ui/Page";
 import { ParticipantList } from "../../src/shared/ui/ParticipantList";
+import { QrCode } from "../../src/shared/ui/QrCode";
 import { ShareButton } from "../../src/shared/ui/ShareButton";
 
 export default function ManagePage() {
@@ -32,6 +33,10 @@ export default function ManagePage() {
       <Text className="text-2xl font-bold">Управление активностью</Text>
       <Text>Публичная ссылка: {publicUrl}</Text>
       <ShareButton slug={activity.slug} title={activity.title} />
+      <View className="gap-1">
+        <Text className="text-xl font-bold">QR для афиши</Text>
+        <QrCode url={publicUrl} />
+      </View>
       <ManageActivityForm
         form={form}
         status={activity.status}
