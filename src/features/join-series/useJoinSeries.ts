@@ -1,6 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { readReminders } from "../../entities/reminder/local";
 import {
   cancelReminder,
   scheduleReminder,
@@ -58,6 +59,14 @@ export function useJoinSeries(series?: Series, meetings: Meeting[] = []) {
     }
   }
 
+  // Организатор отменил встречу, на которую было поставлено напоминание, —
+  // переносим его на следующую активную встречу, иначе участник получит
+  // уведомление о встрече, которой не будет.
+  useEffect(() => {
+    if (series == null) return;
+    moveReminderPastCancelled(series, meetings).catch(() => {});
+  }, [series, meetings]);
+
   async function leave() {
     if (!membership) return;
 
@@ -92,6 +101,27 @@ async function planReminder(series: Series, meetings: Meeting[]) {
     slug: series.slug,
     title: series.title,
     startsAt: meeting.starts_at,
+  });
+}
+
+async function moveReminderPastCancelled(series: Series, meetings: Meeting[]) {
+  const reminders = await readReminders();
+  const reminder = reminders.find((item) => item.slug === series.slug);
+  if (reminder == null) return;
+
+  const target = meetings.find(
+    (meeting) => meeting.starts_at === reminder.startsAt,
+  );
+  if (target == null || target.status !== "cancelled") return;
+
+  await cancelReminder(series.slug);
+  const next = nextMeeting(meetings, reminder.startsAt);
+  if (next == null) return;
+
+  await scheduleReminder({
+    slug: series.slug,
+    title: series.title,
+    startsAt: next.starts_at,
   });
 }
 
