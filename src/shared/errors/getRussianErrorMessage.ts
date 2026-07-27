@@ -14,6 +14,10 @@ const knownErrorMessages: Array<[RegExp, string]> = [
   [/duplicate key/i, "Такая запись уже существует"],
   [/violates foreign key constraint/i, "Связанная запись не найдена"],
   [/violates not-null constraint/i, "Заполните обязательные поля"],
+  [
+    /слишком много мероприятий создано с этого адреса/i,
+    "Слишком много мероприятий создано с этого адреса. Попробуйте позже.",
+  ],
 ];
 
 export function getRussianErrorMessage(

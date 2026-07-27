@@ -1,9 +1,10 @@
 import { useState } from "react";
-import { Image, Text, View } from "react-native";
+import { Alert, Image, Text, View } from "react-native";
 import type { Activity } from "../../src/entities/activity/types";
 import { getCapacityState } from "../../src/entities/activity/utils";
 import { getParticipantStatusText } from "../../src/entities/participant/utils";
 import { useLikeActivity } from "../../src/features/like-activity/useLikeActivity";
+import { useReportActivity } from "../../src/features/report-activity/useReportActivity";
 import { ResponseForm } from "../../src/features/respond-to-activity/ResponseForm";
 import { useRespondToActivityForm } from "../../src/features/respond-to-activity/useRespondToActivityForm";
 import { categoryLabel } from "../../src/shared/lib/categories";
@@ -85,6 +86,7 @@ export default function ActivityPage() {
         loading={participantsLoading}
         statusText={getParticipantStatusText}
       />
+      <ReportButton activityId={activity.id} />
     </Page>
   );
 }
@@ -123,6 +125,35 @@ function LikeButton({ slug }: { slug: string }) {
       onPress={toggle}
       disabled={isToggling}
     />
+  );
+}
+
+function ReportButton({ activityId }: { activityId: string }) {
+  const { hasReported, report, isReporting, errorMessage } =
+    useReportActivity(activityId);
+
+  function confirmReport() {
+    Alert.alert("Пожаловаться на мероприятие?", "Модератор проверит жалобу.", [
+      { text: "Отмена", style: "cancel" },
+      { text: "Пожаловаться", style: "destructive", onPress: report },
+    ]);
+  }
+
+  if (hasReported) {
+    return <Text className="text-gray-600">Жалоба отправлена</Text>;
+  }
+
+  return (
+    <View className="gap-1">
+      <Button
+        title="Пожаловаться"
+        onPress={confirmReport}
+        disabled={isReporting}
+      />
+      {errorMessage ? (
+        <Text className="text-red-700">{errorMessage}</Text>
+      ) : null}
+    </View>
   );
 }
 
