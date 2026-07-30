@@ -5,6 +5,7 @@ import {
   useActivityByEditToken,
   useUpdateActivity,
 } from "../../entities/activity/hooks";
+import { updateMyActivity } from "../../entities/activity/local";
 import {
   mapActivityToUpdateForm,
   mapUpdateActivityFormToInput,
@@ -38,10 +39,15 @@ export function useManageActivityForm() {
 
     try {
       form.clearErrors("root.server");
-      await mutation.mutateAsync({
-        id: activity.id,
-        input: mapUpdateActivityFormToInput(values),
-      });
+      const input = mapUpdateActivityFormToInput(values);
+      await mutation.mutateAsync({ id: activity.id, input });
+      // Список «Мои ивенты» не критичен: сбой синхронизации не должен
+      // откатывать уже сохранённую на сервере активность.
+      await updateMyActivity(activity.slug, {
+        title: values.title,
+        city: values.city,
+        startsAt: input.starts_at,
+      }).catch(() => {});
     } catch (error) {
       setFormServerError(
         form.setError,

@@ -9,8 +9,12 @@ import { Select } from "../../shared/ui/Select";
 import { Textarea } from "../../shared/ui/Textarea";
 import { useCreateActivityForm } from "./useCreateActivityForm";
 
-export function CreateActivityForm() {
-  const { form, submit, isSaving } = useCreateActivityForm();
+type Props = {
+  duplicateFrom?: string;
+};
+
+export function CreateActivityForm({ duplicateFrom }: Props) {
+  const { form, submit, isSaving } = useCreateActivityForm(duplicateFrom);
   const { control, handleSubmit } = form;
   const { errors } = form.formState;
 

@@ -26,6 +26,18 @@ export async function addMyActivity(activity: Activity) {
   });
 }
 
+export async function updateMyActivity(
+  slug: string,
+  patch: Partial<Pick<MyActivity, "title" | "city" | "startsAt">>,
+) {
+  return updateDeviceJson<MyActivity[]>(myActivitiesKey, (current) => {
+    const list = current ?? [];
+    return list.map((item) =>
+      item.slug === slug ? { ...item, ...patch } : item,
+    );
+  });
+}
+
 function toMyActivity(activity: Activity): MyActivity {
   return {
     slug: activity.slug,

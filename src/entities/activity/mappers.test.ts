@@ -5,6 +5,7 @@ vi.mock("expo-crypto", () => ({
 }));
 
 import {
+  mapActivityToDuplicateForm,
   mapActivityToUpdateForm,
   mapCreateActivityFormToInput,
   mapUpdateActivityFormToInput,
@@ -114,6 +115,25 @@ describe("activity/mappers", () => {
     const form = mapActivityToUpdateForm(buildActivity({ category: "tech" }));
 
     expect(form.category).toBe("tech");
+  });
+
+  it("преобразует активность в форму дублирования: дата пустая, статус отсутствует", () => {
+    const form = mapActivityToDuplicateForm(
+      buildActivity({ description: "Описание", chat_url: "https://t.me/club" }),
+    );
+
+    expect(form).toEqual({
+      title: "Activity",
+      description: "Описание",
+      city: "Москва",
+      location_text: "",
+      starts_at: "",
+      capacity: null,
+      cover_url: "",
+      chat_url: "https://t.me/club",
+      category: "",
+    });
+    expect(form).not.toHaveProperty("status");
   });
 });
 

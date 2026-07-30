@@ -2,10 +2,14 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "expo-router";
 import { useForm } from "react-hook-form";
 import {
+  useActivityByEditToken,
   useCreateActivity,
   useTrackMyActivity,
 } from "../../entities/activity/hooks";
-import { mapCreateActivityFormToInput } from "../../entities/activity/mappers";
+import {
+  mapActivityToDuplicateForm,
+  mapCreateActivityFormToInput,
+} from "../../entities/activity/mappers";
 import {
   type CreateActivityForm,
   type CreateActivityFormInput,
@@ -14,6 +18,7 @@ import {
 import type { Activity } from "../../entities/activity/types";
 import { telegramToChatUrl } from "../../entities/activity/utils";
 import { useProfile } from "../../entities/profile/hooks";
+import type { Profile } from "../../entities/profile/types";
 import { setFormServerError } from "../../shared/lib/setFormServerError";
 
 const emptyForm: CreateActivityFormInput = {
@@ -28,17 +33,19 @@ const emptyForm: CreateActivityFormInput = {
   category: "",
 };
 
-export function useCreateActivityForm() {
+export function useCreateActivityForm(duplicateFrom?: string) {
   const router = useRouter();
   const mutation = useCreateActivity();
   const track = useTrackMyActivity();
   const { data: profile } = useProfile();
-  // Тир 1: чат у организатора обычно один на все встречи — дефолтим ссылку
-  // из Telegram профиля. Профиль грузится асинхронно, поэтому через `values`;
-  // keepDirtyValues не затирает то, что организатор уже ввёл вручную.
-  const prefill = profile
-    ? { ...emptyForm, chat_url: telegramToChatUrl(profile.socials.telegram) }
-    : undefined;
+  const duplicateSourceQuery = useActivityByEditToken(duplicateFrom);
+  // Профиль и (при дублировании) источник грузятся асинхронно, поэтому через
+  // `values`; keepDirtyValues не затирает то, что организатор уже ввёл вручную.
+  const prefill = buildPrefill({
+    profile,
+    duplicateFrom,
+    duplicateSource: duplicateSourceQuery.data,
+  });
   const form = useForm<CreateActivityFormInput, unknown, CreateActivityForm>({
     resolver: zodResolver(createActivitySchema),
     defaultValues: emptyForm,
@@ -72,4 +79,36 @@ export function useCreateActivityForm() {
     submit,
     isSaving: mutation.isPending,
   };
+}
+
+type PrefillParams = {
+  profile: Profile | null | undefined;
+  duplicateFrom: string | undefined;
+  duplicateSource: Activity | null | undefined;
+};
+
+// Дублирование ждёт загрузки источника — иначе форма мигнёт пустыми полями
+// перед подстановкой данных. Источник не найден (битый/чужой edit_token) —
+// тихий откат к обычному пустому созданию, не блокируем сценарий с нуля.
+function buildPrefill({
+  profile,
+  duplicateFrom,
+  duplicateSource,
+}: PrefillParams) {
+  if (duplicateFrom && duplicateSource === undefined) return undefined;
+
+  if (duplicateFrom && duplicateSource) {
+    const chatUrl =
+      duplicateSource.chat_url ?? telegramToChatUrl(profile?.socials.telegram);
+    return {
+      ...mapActivityToDuplicateForm(duplicateSource),
+      chat_url: chatUrl,
+    };
+  }
+
+  // Тир 1: чат у организатора обычно один на все встречи — дефолтим ссылку
+  // из Telegram профиля.
+  return profile
+    ? { ...emptyForm, chat_url: telegramToChatUrl(profile.socials.telegram) }
+    : undefined;
 }

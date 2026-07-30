@@ -1,3 +1,4 @@
+import { useLocalSearchParams } from "expo-router";
 import { useState } from "react";
 import { Text } from "react-native";
 import { CreateActivityForm } from "../src/features/create-activity/CreateActivityForm";
@@ -14,19 +15,27 @@ const modeOptions: { value: Mode; label: string }[] = [
 ];
 
 export default function CreatePage() {
+  const { duplicateFrom } = useLocalSearchParams<{ duplicateFrom?: string }>();
   const [mode, setMode] = useState<Mode>("activity");
+  const isDuplicating = Boolean(duplicateFrom);
 
   return (
     <Page>
       <BackLink />
       <Text className="text-2xl font-bold">Создать</Text>
-      <Select
-        label="тип мероприятия"
-        value={mode}
-        onChange={setMode}
-        options={modeOptions}
-      />
-      {mode === "activity" ? <CreateActivityForm /> : <CreateSeriesForm />}
+      {isDuplicating ? null : (
+        <Select
+          label="тип мероприятия"
+          value={mode}
+          onChange={setMode}
+          options={modeOptions}
+        />
+      )}
+      {isDuplicating || mode === "activity" ? (
+        <CreateActivityForm duplicateFrom={duplicateFrom} />
+      ) : (
+        <CreateSeriesForm />
+      )}
     </Page>
   );
 }

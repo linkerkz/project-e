@@ -1,6 +1,7 @@
 import { Linking, Text, View } from "react-native";
 import { useMyActivities } from "../../src/entities/activity/hooks";
 import type { MyActivity } from "../../src/entities/activity/local";
+import { splitByStartsAt } from "../../src/entities/activity/utils";
 import { useMyResponses } from "../../src/entities/participant/hooks";
 import { useProfile, useResetProfile } from "../../src/entities/profile/hooks";
 import type { Profile } from "../../src/entities/profile/types";
@@ -149,21 +150,62 @@ function ReminderSettings() {
 }
 
 function MyActivities({ items }: { items: MyActivity[] }) {
+  const { upcoming, past } = splitByStartsAt(items);
+
   return (
     <View className="gap-2">
       <Text className="text-xl font-bold">Мои ивенты</Text>
+      <UpcomingActivities items={upcoming} />
+      <PastActivities items={past} />
+    </View>
+  );
+}
+
+function UpcomingActivities({ items }: { items: MyActivity[] }) {
+  return (
+    <View className="gap-2">
+      <Text className="font-semibold">Предстоящие</Text>
       {items.length === 0 ? <Text>Пока ничего не создано.</Text> : null}
       {items.map((item) => (
-        <View key={item.slug} className="border-b border-gray-300 py-2">
-          <Text>
-            {item.title} — {item.city}
-          </Text>
-          <View className="flex-row gap-4">
-            <TextLink href={`/a/${item.slug}`}>страница</TextLink>
-            <TextLink href={`/manage/${item.editToken}`}>управление</TextLink>
-          </View>
-        </View>
+        <ActivityListItem key={item.slug} item={item} />
       ))}
+    </View>
+  );
+}
+
+function PastActivities({ items }: { items: MyActivity[] }) {
+  return (
+    <View className="gap-2">
+      <Text className="font-semibold">Прошедшие</Text>
+      {items.length === 0 ? <Text>Прошедших пока нет.</Text> : null}
+      {items.map((item) => (
+        <ActivityListItem key={item.slug} item={item} showDuplicate />
+      ))}
+    </View>
+  );
+}
+
+function ActivityListItem({
+  item,
+  showDuplicate,
+}: {
+  item: MyActivity;
+  showDuplicate?: boolean;
+}) {
+  return (
+    <View className="border-b border-gray-300 py-2">
+      <Text>
+        {item.title} — {item.city}
+      </Text>
+      <View className="flex-row gap-4">
+        <TextLink href={`/a/${item.slug}`}>страница</TextLink>
+        <TextLink href={`/manage/${item.editToken}`}>управление</TextLink>
+        {showDuplicate ? (
+          <TextLink href={`/create?duplicateFrom=${item.editToken}`}>
+            дублировать
+          </TextLink>
+        ) : null}
+      </View>
     </View>
   );
 }

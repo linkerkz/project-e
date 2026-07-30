@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   getCapacityState,
   getNextActivityStatus,
+  splitByStartsAt,
   telegramToChatUrl,
 } from "./utils";
 
@@ -30,6 +31,18 @@ describe("activity/utils", () => {
     });
     expect(getCapacityState({ capacity: 5, going: 5 })).toEqual({
       kind: "full",
+    });
+  });
+
+  it("делит список на предстоящие и прошедшие по startsAt", () => {
+    const now = new Date("2026-06-15T12:00:00.000Z");
+    const future = { startsAt: "2026-06-16T12:00:00.000Z" };
+    const past = { startsAt: "2026-06-14T12:00:00.000Z" };
+    const exactlyNow = { startsAt: "2026-06-15T12:00:00.000Z" };
+
+    expect(splitByStartsAt([future, past, exactlyNow], now)).toEqual({
+      upcoming: [future],
+      past: [past, exactlyNow],
     });
   });
 });

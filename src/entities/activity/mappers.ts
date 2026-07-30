@@ -5,6 +5,7 @@ import {
 import { generateEditToken, generateSlug } from "../../shared/lib/publicLink";
 import type {
   CreateActivityForm,
+  CreateActivityFormInput,
   UpdateActivityForm,
   UpdateActivityFormInput,
 } from "./schemas";
@@ -49,5 +50,32 @@ export function mapActivityToUpdateForm(
     chat_url: activity.chat_url ?? "",
     category: activity.category ?? "",
     status: activity.status,
+  };
+}
+
+export function mapActivityToDuplicateForm(
+  activity: Activity,
+): CreateActivityFormInput {
+  const {
+    title,
+    description,
+    city,
+    location_text,
+    capacity,
+    cover_url,
+    chat_url,
+    category,
+  } = mapActivityToUpdateForm(activity);
+
+  return {
+    title,
+    description,
+    city,
+    location_text,
+    starts_at: "",
+    capacity,
+    cover_url,
+    chat_url,
+    category,
   };
 }
