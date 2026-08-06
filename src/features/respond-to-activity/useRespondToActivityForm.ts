@@ -11,8 +11,8 @@ import {
 } from "../../entities/participant/hooks";
 import { mapParticipantFormToInput } from "../../entities/participant/mappers";
 import {
+  createParticipantSchema,
   type ParticipantForm,
-  participantSchema,
 } from "../../entities/participant/schemas";
 import { getParticipantStats } from "../../entities/participant/utils";
 import {
@@ -35,8 +35,9 @@ export function useRespondToActivityForm() {
   const participantsQuery = useParticipants(activity?.id);
   const mutation = useCreateParticipant();
   const track = useTrackMyResponse();
+  const allowMaybe = activity?.allow_maybe ?? true;
   const form = useForm<ParticipantForm>({
-    resolver: zodResolver(participantSchema),
+    resolver: zodResolver(createParticipantSchema(allowMaybe)),
     defaultValues: emptyResponse,
   });
 
@@ -104,6 +105,7 @@ export function useRespondToActivityForm() {
     participants,
     participantsLoading: participantsQuery.isLoading,
     stats,
+    allowMaybe,
     form,
     submit,
     isSaving: mutation.isPending,

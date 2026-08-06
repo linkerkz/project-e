@@ -80,6 +80,21 @@ describe("activity/schemas", () => {
     ).toBe(false);
   });
 
+  it("allow_maybe по умолчанию true без явного значения", () => {
+    const result = createActivitySchema.parse(validForm);
+
+    expect(result.allow_maybe).toBe(true);
+  });
+
+  it("пробрасывает allow_maybe: false", () => {
+    const result = createActivitySchema.parse({
+      ...validForm,
+      allow_maybe: false,
+    });
+
+    expect(result.allow_maybe).toBe(false);
+  });
+
   it("в форме обновления добавляет статус", () => {
     const ok = updateActivitySchema.safeParse({
       ...validForm,

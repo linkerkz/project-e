@@ -49,6 +49,7 @@ export function mapActivityToUpdateForm(
     cover_url: activity.cover_url ?? "",
     chat_url: activity.chat_url ?? "",
     category: activity.category ?? "",
+    allow_maybe: activity.allow_maybe,
     status: activity.status,
   };
 }
@@ -65,6 +66,7 @@ export function mapActivityToDuplicateForm(
     cover_url,
     chat_url,
     category,
+    allow_maybe,
   } = mapActivityToUpdateForm(activity);
 
   return {
@@ -77,5 +79,6 @@ export function mapActivityToDuplicateForm(
     cover_url,
     chat_url,
     category,
+    allow_maybe,
   };
 }

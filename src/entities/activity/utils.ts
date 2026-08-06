@@ -13,6 +13,12 @@ export function getNextActivityStatus(status: ActivityStatus): ActivityStatus {
   return status === "active" ? "cancelled" : "active";
 }
 
+// Select — дженерик только по string, булево значение как есть не подходит.
+export const boolOptions = [
+  { value: "yes", label: "да" },
+  { value: "no", label: "нет" },
+];
+
 type WithStartsAt = { startsAt: string };
 
 export function splitByStartsAt<T extends WithStartsAt>(

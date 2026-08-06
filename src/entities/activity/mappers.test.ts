@@ -24,6 +24,7 @@ describe("activity/mappers", () => {
       cover_url: null,
       chat_url: null,
       category: "sport",
+      allow_maybe: true,
     });
 
     expect(input).toMatchObject({
@@ -53,6 +54,7 @@ describe("activity/mappers", () => {
       cover_url: "https://example.com/image.jpg",
       chat_url: "https://t.me/club",
       category: "music",
+      allow_maybe: true,
     });
 
     expect(input.category).toBe("music");
@@ -74,6 +76,7 @@ describe("activity/mappers", () => {
       cover_url: null,
       chat_url: null,
       category: "sport",
+      allow_maybe: true,
       status: "cancelled",
     });
 
@@ -87,6 +90,7 @@ describe("activity/mappers", () => {
       cover_url: null,
       chat_url: null,
       category: "sport",
+      allow_maybe: true,
       status: "cancelled",
     });
   });
@@ -132,6 +136,7 @@ describe("activity/mappers", () => {
       cover_url: "",
       chat_url: "https://t.me/club",
       category: "",
+      allow_maybe: true,
     });
     expect(form).not.toHaveProperty("status");
   });
@@ -150,6 +155,7 @@ function buildActivity(overrides: Partial<Activity>): Activity {
     cover_url: null,
     chat_url: null,
     category: null,
+    allow_maybe: true,
     edit_token: "token",
     status: "active",
     created_at: "2026-05-01T00:00:00.000Z",

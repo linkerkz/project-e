@@ -29,6 +29,7 @@ export default function ActivityPage() {
     participants,
     participantsLoading,
     stats,
+    allowMaybe,
     form,
     submit,
     isSaving,
@@ -64,6 +65,9 @@ export default function ActivityPage() {
         <Text className="font-bold text-red-700">ОТМЕНЕНО</Text>
       ) : null}
       <Text>Идут: {stats.going}</Text>
+      {activity.allow_maybe && stats.maybe > 0 ? (
+        <Text>Возможно: {stats.maybe}</Text>
+      ) : null}
       <CapacityNotice capacity={activity.capacity} going={stats.going} />
       <LikeButton slug={activity.slug} />
       <ShareButton slug={activity.slug} title={activity.title} />
@@ -73,7 +77,12 @@ export default function ActivityPage() {
       <QrBlock url={buildActivityPublicUrl(activity.slug)} />
       {activity.chat_url ? <ChatLinkButton url={activity.chat_url} /> : null}
       {activity.status !== "cancelled" && !hasResponded ? (
-        <ResponseForm form={form} isSaving={isSaving} onSubmit={submit} />
+        <ResponseForm
+          form={form}
+          allowMaybe={allowMaybe}
+          isSaving={isSaving}
+          onSubmit={submit}
+        />
       ) : null}
       {activity.status !== "cancelled" && hasResponded ? (
         <Text className="font-bold">

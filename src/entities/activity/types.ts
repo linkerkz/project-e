@@ -14,6 +14,7 @@ export type Activity = {
   cover_url: string | null;
   chat_url: string | null;
   category: CategoryKey | null;
+  allow_maybe: boolean;
   edit_token: string;
   status: ActivityStatus;
   created_at: string;
@@ -31,6 +32,7 @@ export type CreateActivityInput = {
   cover_url?: string | null;
   chat_url?: string | null;
   category: CategoryKey;
+  allow_maybe?: boolean;
   edit_token: string;
   status: ActivityStatus;
 };

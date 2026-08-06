@@ -31,6 +31,7 @@ const emptyForm: CreateActivityFormInput = {
   cover_url: "",
   chat_url: "",
   category: "",
+  allow_maybe: true,
 };
 
 export function useCreateActivityForm(duplicateFrom?: string) {

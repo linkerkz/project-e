@@ -5,7 +5,10 @@ import type {
   UpdateActivityFormInput,
 } from "../../entities/activity/schemas";
 import type { ActivityStatus } from "../../entities/activity/types";
-import { activityStatusOptions } from "../../entities/activity/utils";
+import {
+  activityStatusOptions,
+  boolOptions,
+} from "../../entities/activity/utils";
 import { categoryOptions } from "../../shared/lib/categories";
 import { Button } from "../../shared/ui/Button";
 import { DateTimeInput } from "../../shared/ui/DateTimeInput";
@@ -95,6 +98,19 @@ export function ManageActivityForm({
             onChange={field.onChange}
             options={categoryOptions}
             error={errors.category?.message}
+          />
+        )}
+      />
+      <Controller
+        control={control}
+        name="allow_maybe"
+        render={({ field }) => (
+          <Select
+            label="разрешить статус «может быть»"
+            value={field.value ? "yes" : "no"}
+            onChange={(value) => field.onChange(value === "yes")}
+            options={boolOptions}
+            error={errors.allow_maybe?.message}
           />
         )}
       />

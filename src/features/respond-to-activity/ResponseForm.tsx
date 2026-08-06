@@ -1,17 +1,25 @@
-import type { UseFormReturn } from "react-hook-form";
+import { Controller, type UseFormReturn } from "react-hook-form";
 import { Text, View } from "react-native";
 import type { ParticipantForm } from "../../entities/participant/schemas";
+import { participantStatusLabels } from "../../entities/participant/utils";
 import { Button } from "../../shared/ui/Button";
 import { ErrorText } from "../../shared/ui/ErrorText";
 import { FormField } from "../../shared/ui/FormField";
+import { Select } from "../../shared/ui/Select";
+
+const statusOptions: { value: "going" | "maybe"; label: string }[] = [
+  { value: "going", label: participantStatusLabels.going },
+  { value: "maybe", label: participantStatusLabels.maybe },
+];
 
 type Props = {
   form: UseFormReturn<ParticipantForm>;
+  allowMaybe: boolean;
   isSaving: boolean;
   onSubmit: (values: ParticipantForm) => void;
 };
 
-export function ResponseForm({ form, isSaving, onSubmit }: Props) {
+export function ResponseForm({ form, allowMaybe, isSaving, onSubmit }: Props) {
   const { control, handleSubmit } = form;
   const { errors } = form.formState;
 
@@ -30,6 +38,21 @@ export function ResponseForm({ form, isSaving, onSubmit }: Props) {
         label="телеграм"
         error={errors.telegram?.message}
       />
+      {allowMaybe ? (
+        <Controller
+          control={control}
+          name="status"
+          render={({ field }) => (
+            <Select
+              label="статус"
+              value={field.value}
+              onChange={field.onChange}
+              options={statusOptions}
+              error={errors.status?.message}
+            />
+          )}
+        />
+      ) : null}
       <Button
         title={isSaving ? "Сохраняем..." : "Отправить отклик"}
         onPress={handleSubmit(onSubmit)}
