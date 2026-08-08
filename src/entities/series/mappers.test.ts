@@ -30,6 +30,7 @@ describe("series/mappers", () => {
       cover_url: null,
       chat_url: null,
       category: "networking",
+      is_free: true,
       recurrence,
     });
 
@@ -94,6 +95,12 @@ describe("series/mappers", () => {
 
     expect(form.category).toBe("tech");
   });
+
+  it("сохраняет признак «бесплатно» в форме управления", () => {
+    const form = mapSeriesToUpdateForm(buildSeries({ is_free: false }));
+
+    expect(form.is_free).toBe(false);
+  });
 });
 
 function buildSeries(overrides: Partial<Series>): Series {
@@ -109,6 +116,7 @@ function buildSeries(overrides: Partial<Series>): Series {
     cover_url: null,
     chat_url: null,
     category: null,
+    is_free: true,
     recurrence,
     edit_token: "token",
     status: "active",

@@ -77,6 +77,18 @@ describe("series/schemas", () => {
     ).toBe(false);
   });
 
+  it("is_free по умолчанию true без явного значения", () => {
+    const result = createSeriesSchema.parse(validForm);
+
+    expect(result.is_free).toBe(true);
+  });
+
+  it("пробрасывает is_free: false", () => {
+    const result = createSeriesSchema.parse({ ...validForm, is_free: false });
+
+    expect(result.is_free).toBe(false);
+  });
+
   it("в форме обновления добавляет статус", () => {
     const ok = updateSeriesSchema.safeParse({
       ...validForm,

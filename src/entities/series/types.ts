@@ -28,6 +28,7 @@ export type Series = {
   cover_url: string | null;
   chat_url: string | null;
   category: CategoryKey | null;
+  is_free: boolean;
   recurrence: Recurrence;
   edit_token: string;
   status: SeriesStatus;
@@ -78,6 +79,7 @@ export type CreateSeriesInput = {
   cover_url?: string | null;
   chat_url?: string | null;
   category: CategoryKey;
+  is_free?: boolean;
   recurrence: Recurrence;
   edit_token: string;
   status: SeriesStatus;

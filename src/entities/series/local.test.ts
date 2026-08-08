@@ -32,6 +32,7 @@ const series: Series = {
   cover_url: null,
   chat_url: null,
   category: null,
+  is_free: true,
   recurrence: {
     interval: 1,
     unit: "week",

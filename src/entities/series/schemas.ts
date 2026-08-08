@@ -55,6 +55,7 @@ export const createSeriesSchema = z.object({
   cover_url: optionalUrl,
   chat_url: chatUrl,
   category: z.string().min(1, "Выберите категорию").pipe(z.enum(categoryKeys)),
+  is_free: z.boolean().default(true),
   recurrence,
 });
 
