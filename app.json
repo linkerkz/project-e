@@ -19,8 +19,16 @@
           "action": "VIEW",
           "autoVerify": true,
           "data": [
-            { "scheme": "https", "host": "venty.app", "pathPrefix": "/a" },
-            { "scheme": "https", "host": "venty.app", "pathPrefix": "/s" }
+            {
+              "scheme": "https",
+              "host": "venty.app",
+              "pathPrefix": "/a"
+            },
+            {
+              "scheme": "https",
+              "host": "venty.app",
+              "pathPrefix": "/s"
+            }
           ],
           "category": ["BROWSABLE", "DEFAULT"]
         }
@@ -46,7 +54,14 @@
           "microphonePermission": false
         }
       ],
-      "expo-notifications"
+      "expo-notifications",
+      "expo-splash-screen",
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Venty использует геолокацию, чтобы предложить ваш город в ленте."
+        }
+      ]
     ]
   }
 }
