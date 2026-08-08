@@ -25,6 +25,7 @@ describe("activity/mappers", () => {
       chat_url: null,
       category: "sport",
       allow_maybe: true,
+      is_free: true,
     });
 
     expect(input).toMatchObject({
@@ -55,8 +56,10 @@ describe("activity/mappers", () => {
       chat_url: "https://t.me/club",
       category: "music",
       allow_maybe: true,
+      is_free: false,
     });
 
+    expect(input.is_free).toBe(false);
     expect(input.category).toBe("music");
     expect(input.description).toBe("Описание");
     expect(input.location_text).toBe("Парк");
@@ -77,6 +80,7 @@ describe("activity/mappers", () => {
       chat_url: null,
       category: "sport",
       allow_maybe: true,
+      is_free: true,
       status: "cancelled",
     });
 
@@ -91,6 +95,7 @@ describe("activity/mappers", () => {
       chat_url: null,
       category: "sport",
       allow_maybe: true,
+      is_free: true,
       status: "cancelled",
     });
   });
@@ -137,8 +142,15 @@ describe("activity/mappers", () => {
       chat_url: "https://t.me/club",
       category: "",
       allow_maybe: true,
+      is_free: true,
     });
     expect(form).not.toHaveProperty("status");
+  });
+
+  it("сохраняет признак «бесплатно» в форме дублирования", () => {
+    const form = mapActivityToDuplicateForm(buildActivity({ is_free: false }));
+
+    expect(form.is_free).toBe(false);
   });
 });
 
@@ -156,6 +168,7 @@ function buildActivity(overrides: Partial<Activity>): Activity {
     chat_url: null,
     category: null,
     allow_maybe: true,
+    is_free: true,
     edit_token: "token",
     status: "active",
     created_at: "2026-05-01T00:00:00.000Z",

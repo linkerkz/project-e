@@ -15,6 +15,7 @@ export type Activity = {
   chat_url: string | null;
   category: CategoryKey | null;
   allow_maybe: boolean;
+  is_free: boolean;
   edit_token: string;
   status: ActivityStatus;
   created_at: string;
@@ -33,6 +34,7 @@ export type CreateActivityInput = {
   chat_url?: string | null;
   category: CategoryKey;
   allow_maybe?: boolean;
+  is_free?: boolean;
   edit_token: string;
   status: ActivityStatus;
 };

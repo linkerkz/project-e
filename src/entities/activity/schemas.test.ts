@@ -95,6 +95,18 @@ describe("activity/schemas", () => {
     expect(result.allow_maybe).toBe(false);
   });
 
+  it("is_free по умолчанию true без явного значения", () => {
+    const result = createActivitySchema.parse(validForm);
+
+    expect(result.is_free).toBe(true);
+  });
+
+  it("пробрасывает is_free: false", () => {
+    const result = createActivitySchema.parse({ ...validForm, is_free: false });
+
+    expect(result.is_free).toBe(false);
+  });
+
   it("в форме обновления добавляет статус", () => {
     const ok = updateActivitySchema.safeParse({
       ...validForm,

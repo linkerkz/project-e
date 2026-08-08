@@ -39,6 +39,7 @@ const activity: Activity = {
   chat_url: null,
   category: null,
   allow_maybe: true,
+  is_free: true,
   edit_token: "token",
   status: "active",
   created_at: "",

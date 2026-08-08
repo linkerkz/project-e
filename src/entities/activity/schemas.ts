@@ -22,6 +22,7 @@ export const createActivitySchema = z.object({
   chat_url: chatUrl,
   category: z.string().min(1, "Выберите категорию").pipe(z.enum(categoryKeys)),
   allow_maybe: z.boolean().default(true),
+  is_free: z.boolean().default(true),
 });
 
 export const updateActivitySchema = createActivitySchema.extend({
