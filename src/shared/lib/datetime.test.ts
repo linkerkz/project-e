@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  isToday,
   isValidDateTime,
   toDateTimeLocalInputValue,
   toIsoDate,
@@ -29,5 +30,13 @@ describe("shared/datetime", () => {
 
     expect(toDateTimeLocalInputValue(value)).toBe(expected);
     expect(toDateTimeLocalInputValue("не дата")).toBe("не дата");
+  });
+
+  it("сегодня — сегодня, вчера/завтра и мусор — нет", () => {
+    const day = 24 * 60 * 60 * 1000;
+    expect(isToday(Date.now())).toBe(true);
+    expect(isToday(Date.now() - day)).toBe(false);
+    expect(isToday(Date.now() + day)).toBe(false);
+    expect(isToday(Number.POSITIVE_INFINITY)).toBe(false);
   });
 });

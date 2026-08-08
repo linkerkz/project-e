@@ -2,6 +2,18 @@ export function isValidDateTime(value: string) {
   return parseDate(value) != null;
 }
 
+export function isToday(time: number) {
+  const date = new Date(time);
+  if (Number.isNaN(date.getTime())) return false;
+
+  const now = new Date();
+  return (
+    date.getFullYear() === now.getFullYear() &&
+    date.getMonth() === now.getMonth() &&
+    date.getDate() === now.getDate()
+  );
+}
+
 export function toIsoDate(value: string) {
   return parseDate(value)?.toISOString() ?? value;
 }
