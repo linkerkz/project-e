@@ -23,6 +23,7 @@ const emptyForm: CreateSeriesFormInput = {
   cover_url: "",
   chat_url: "",
   category: "",
+  is_free: true,
   recurrence: {
     interval: 1,
     unit: "week",

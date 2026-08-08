@@ -1,5 +1,6 @@
 import { Controller } from "react-hook-form";
 import { View } from "react-native";
+import { boolOptions } from "../../shared/lib/boolOptions";
 import { categoryOptions } from "../../shared/lib/categories";
 import { Button } from "../../shared/ui/Button";
 import { DateTimeInput } from "../../shared/ui/DateTimeInput";
@@ -79,6 +80,19 @@ export function CreateSeriesForm() {
             onChange={field.onChange}
             options={categoryOptions}
             error={errors.category?.message}
+          />
+        )}
+      />
+      <Controller
+        control={control}
+        name="is_free"
+        render={({ field }) => (
+          <Select
+            label="бесплатное участие"
+            value={field.value ? "yes" : "no"}
+            onChange={(value) => field.onChange(value === "yes")}
+            options={boolOptions}
+            error={errors.is_free?.message}
           />
         )}
       />

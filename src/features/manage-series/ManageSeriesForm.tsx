@@ -5,6 +5,7 @@ import type {
   UpdateSeriesFormInput,
 } from "../../entities/series/schemas";
 import type { SeriesStatus } from "../../entities/series/types";
+import { boolOptions } from "../../shared/lib/boolOptions";
 import { categoryOptions } from "../../shared/lib/categories";
 import { Button } from "../../shared/ui/Button";
 import { DateTimeInput } from "../../shared/ui/DateTimeInput";
@@ -103,6 +104,19 @@ export function ManageSeriesForm({
             onChange={field.onChange}
             options={categoryOptions}
             error={errors.category?.message}
+          />
+        )}
+      />
+      <Controller
+        control={control}
+        name="is_free"
+        render={({ field }) => (
+          <Select
+            label="бесплатное участие"
+            value={field.value ? "yes" : "no"}
+            onChange={(value) => field.onChange(value === "yes")}
+            options={boolOptions}
+            error={errors.is_free?.message}
           />
         )}
       />
