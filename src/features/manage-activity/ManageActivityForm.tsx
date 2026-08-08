@@ -5,10 +5,8 @@ import type {
   UpdateActivityFormInput,
 } from "../../entities/activity/schemas";
 import type { ActivityStatus } from "../../entities/activity/types";
-import {
-  activityStatusOptions,
-  boolOptions,
-} from "../../entities/activity/utils";
+import { activityStatusOptions } from "../../entities/activity/utils";
+import { boolOptions } from "../../shared/lib/boolOptions";
 import { categoryOptions } from "../../shared/lib/categories";
 import { Button } from "../../shared/ui/Button";
 import { DateTimeInput } from "../../shared/ui/DateTimeInput";
@@ -111,6 +109,19 @@ export function ManageActivityForm({
             onChange={(value) => field.onChange(value === "yes")}
             options={boolOptions}
             error={errors.allow_maybe?.message}
+          />
+        )}
+      />
+      <Controller
+        control={control}
+        name="is_free"
+        render={({ field }) => (
+          <Select
+            label="бесплатное участие"
+            value={field.value ? "yes" : "no"}
+            onChange={(value) => field.onChange(value === "yes")}
+            options={boolOptions}
+            error={errors.is_free?.message}
           />
         )}
       />

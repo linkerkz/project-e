@@ -32,6 +32,7 @@ const emptyForm: CreateActivityFormInput = {
   chat_url: "",
   category: "",
   allow_maybe: true,
+  is_free: true,
 };
 
 export function useCreateActivityForm(duplicateFrom?: string) {
